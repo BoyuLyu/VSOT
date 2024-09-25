@@ -10,7 +10,6 @@
 
 ## Introduction
 
-## System requirements
 
 ## License
 This project is licensed under the GNU license - see the [LICENSE](LICENSE) file for details.
