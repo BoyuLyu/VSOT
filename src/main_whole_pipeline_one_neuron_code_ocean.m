@@ -105,7 +105,7 @@ curvature_scale = cfg.curvature_scale;
 run_in_parallel = 1;
 minpoints = cfg.numP_level2;
 smooth_kernel = cfg.smooth_level2;
-comSeg.level_2_segmentation_main_speedup_output_cutVex(spine_save_folder, spine_head_neck_save_folder, [], curvature_scale, resx_s, resy_s, resz_s,minpoints,smooth_kernel);
+comSeg.level_2_segmentation_main_speed_up(spine_save_folder, spine_head_neck_save_folder, [], curvature_scale, resx_s, resy_s, resz_s,minpoints,smooth_kernel);
 
 %%==========================================================================
 
