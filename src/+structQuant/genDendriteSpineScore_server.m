@@ -124,22 +124,28 @@ function [singleSynHeadVolume,singleSynHeadMeanRadius,singleSynNeckLength, singl
         id1 = find(spineHNROIx(:) == 1, 1);
         if(isempty(id1))
             id1 = setdiff(find(spineHNROIx(:) == 3), hid);
-            id1 = id1(1);
+            if(~isempty(id1))
+                id1 = id1(1);
+            end
         end
-        id2 = hid(1);
-        ssPath = shortestpath(G,nodeMap(id1),nodeMap(id2));
-        pathID = curID(ssPath);
-        pathID = pathID(spineHNROIx(pathID) == 2);
-        if(length(pathID) >=2)
-            linex = zeros(lenx, leny, lenz);
-            linex(pathID) = 1;
-            linex_output = imdilate(linex, se);
-    %         tifwrite(uint8(linex_output), '../test_centerline' )
-            [pathIDx, pathIDy, pathIDz] = ind2sub([lenx, leny, lenz], pathID);
-            dist_pair = sqrt((pathIDx(2:end) - pathIDx(1:end-1)).^2.*resx^2 + (pathIDy(2:end) - pathIDy(1:end-1)).^2.*resy^2+ (pathIDz(2:end) - pathIDz(1:end-1)).^2.*resz^2);
-            singleSynNeckLength = sum(dist_pair);
+        if(~isempty(id1))
+            id2 = hid(1);
+            ssPath = shortestpath(G,nodeMap(id1),nodeMap(id2));
+            pathID = curID(ssPath);
+            pathID = pathID(spineHNROIx(pathID) == 2);
+            if(length(pathID) >=2)
+                linex = zeros(lenx, leny, lenz);
+                linex(pathID) = 1;
+                linex_output = imdilate(linex, se);
+        %         tifwrite(uint8(linex_output), '../test_centerline' )
+                [pathIDx, pathIDy, pathIDz] = ind2sub([lenx, leny, lenz], pathID);
+                dist_pair = sqrt((pathIDx(2:end) - pathIDx(1:end-1)).^2.*resx^2 + (pathIDy(2:end) - pathIDy(1:end-1)).^2.*resy^2+ (pathIDz(2:end) - pathIDz(1:end-1)).^2.*resz^2);
+                singleSynNeckLength = sum(dist_pair);
+            else
+                singleSynNeckLength = 0;
+            end
         else
-            singleSynNeckLength = 0;
+           singleSynNeckLength = 0;
         end
 %         mask_dendrite_1D = logical(headNeckTotal(:));
 %         dist_dendrite_1D = edt_mex(mask_dendrite_1D, lenx, leny, lenz, 16,16,40);

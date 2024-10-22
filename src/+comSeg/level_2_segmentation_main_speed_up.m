@@ -1,4 +1,4 @@
-function level_2_segmentation_main_speedup(spine_save_folder, spine_head_neck_save_folder, curvature_scale, resx, resy, resz)
+function level_2_segmentation_main_speed_up(spine_save_folder, spine_head_neck_save_folder, outputFolder, curvature_scale, resx, resy, resz,minpoints,smooth_kernel)
     % curvature_scale: the scale used to calculate the curvature score (default 30)
     % resx, resy, resz can be set as the greatest common divisor of the original resolution (16x16x40 -> 2x2x5)
     % resx = 2, resy = 2, resz = 5;
@@ -9,7 +9,8 @@ function level_2_segmentation_main_speedup(spine_save_folder, spine_head_neck_sa
         mkdir(spine_head_neck_save_folder)
     end
     tic;
-    
+    coor_head_cell = cell(length(files_x), 1);
+    coor_neck_cell = cell(length(files_x), 1);
     parfor k = 1:length(files_x)
         disp(k)
         try
@@ -20,6 +21,7 @@ function level_2_segmentation_main_speedup(spine_save_folder, spine_head_neck_sa
             test_region_roi_idx = label2idx(test_region_roi);
             len_region = cellfun(@length, test_region_roi_idx);
             test_region = test_region_roi == (find(len_region == max(len_region),1));
+            test_region0 = test_region;
             % test_region0 = test_region_roi == (find(len_region == max(len_region),1));
             % head_volume = zeros(size(test_region));
             % neckx = zeros(size(test_region));
@@ -28,7 +30,7 @@ function level_2_segmentation_main_speedup(spine_save_folder, spine_head_neck_sa
             % [curID1x, curID1y, curID1z] = ind2sub([lenxtmp, lenytmp, lenztmp], curID1);
             % test_regionID = find(test_region(:) == 1);  
             %% generate the surface using the original scale
-            se = strel('sphere', 4);
+            se = strel('sphere', smooth_kernel);
             test_region = imdilate(test_region, se);
             test_region = imclose(test_region, se);
     %%=========================================================================================================
@@ -54,8 +56,9 @@ function level_2_segmentation_main_speedup(spine_save_folder, spine_head_neck_sa
             [uniquex,ia,ic]= unique(mF2_t(:),'stable');
             mappingx(uniquex) = [1:length(mappingx)];
             Vnieuw2 = Vnieuw2_out(mappingx,:);
+            % idSelected = 1:size(Vnieuwx,1);
             % figure;trisurf(mF2,Vnieuw2(:,1),Vnieuw2(:,2),Vnieuw2(:,3),'Facecolor','red','FaceAlpha',0.1);
-            [mF3,Vnieuw3] = reducepatch(mF2,Vnieuwx,min(size(mF2,1),2000));% reduce the number of the vertices for calculation for speedup
+            [mF3,Vnieuw3] = reducepatch(mF2,Vnieuwx,min(size(mF2,1),4000));% reduce the number of the vertices for calculation for speedup
             [~, idSelected] = ismember(Vnieuw3, Vnieuwx,'rows'); % start using the smaller set of the vertex to generate the two scores
             %generate the curvature score
 %                     
@@ -82,17 +85,19 @@ function level_2_segmentation_main_speedup(spine_save_folder, spine_head_neck_sa
             headpoint = find(distVexStartingPoint == max(distVexStartingPoint), 1); % the vertex id of the furthest point 
             % assign certain points as invalid
             distVexStartingPoint(distVexStartingPoint == 0) = 1;
-            ccHead = find(distVexStartingPoint > quantile(distVexStartingPoint,0.95));
+            ccHead = find(distVexStartingPoint > quantile(distVexStartingPoint,0.98));
             ccHead_all_nei = mF2(ismember(mF2(:,1), ccHead)| ismember(mF2(:,2), ccHead)|ismember(mF2(:,3), ccHead),:);
             ccHead = unique(ccHead_all_nei(:));
-            ccNeck = find(distVexStartingPoint <= quantile(distVexStartingPoint,0.01)); % all the faces related to these two will be categorized as real head and neck    
+            ccNeck = find(distVexStartingPoint <= quantile(distVexStartingPoint,0.05)); % all the faces related to these two will be categorized as real head and neck    
             ccNeck_all_nei = mF2(ismember(mF2(:,1), ccNeck)| ismember(mF2(:,2), ccNeck)|ismember(mF2(:,3), ccNeck),:);
             ccNeck = unique(ccNeck_all_nei(:));
+
     %%=========================================================================================================
     % Calculate the curvature score using the adaptive scale
             idSelected = setdiff(idSelected, [ccHead(:);ccNeck(:)]);
             [newCurvature] = comSeg.genCurvatureFace4Scale_speedup(mF2, Vnieuw2, curvature_scale, idSelected); % 48 cores 2.16 s
             % figure;trisurf(mF2,Vnieuw2(:,1),Vnieuw2(:,2),Vnieuw2(:,3),'FaceVertexCData',newCurvature,'Facecolor','interp');   
+
     %%=========================================================================================================
             % select the candidate points based on the surface score and then calculate the geometry score
             newCurvature(ccHead) = nan;
@@ -101,7 +106,7 @@ function level_2_segmentation_main_speedup(spine_save_folder, spine_head_neck_sa
             % newCurvature_order = newCurvature;
             % newCurvature_order(p) = 1:length(p);
             
-            idSelected = p(1:min(100,sum(~isnan(newCurvature))));
+            idSelected = p(1:min(minpoints,sum(~isnan(newCurvature))));
             % newCurvature_order = newCurvature_order.*0;
             % newCurvature_order(idSelected) = 1:length(idSelected);
             
@@ -113,12 +118,12 @@ function level_2_segmentation_main_speedup(spine_save_folder, spine_head_neck_sa
             cutVexcellUnique2 = comSeg.cleanReptitve_v2(cutVex2_speedup);
     %%=========================================================================================================
             % find the optimal cut for each point based on the cycle using the computational unit we designed
-            [surfaceCell, nodeCell] = comSeg.genCutSurface_speedup(cutVexcellUnique2(idSelected), mF2, headpoint,neckpoint,Vnieuwx,Vnieuw, test_region, allTetrax, allVertex);
+            [surfaceCellHead, nodeCellHead] = comSeg.genCutSurface_speedup(cutVexcellUnique2(idSelected), mF2, headpoint,neckpoint,Vnieuwx,Vnieuw, test_region, allTetrax, allVertex);
             sphereMap = zeros(length(idSelected),1) + nan;
             for j = 1:length(sphereMap)
-                if(~isempty(surfaceCell{j}))
-                    verticesFin = nodeCell{j};
-                    combinedSurface = surfaceCell{j}; % this contains the surface of the head part after segmentation
+                if(~isempty(surfaceCellHead{j}))
+                    verticesFin = nodeCellHead{j};
+                    combinedSurface = surfaceCellHead{j}; % this contains the surface of the head part after segmentation
                     vectorMF3_1 = verticesFin(combinedSurface(:,3),:) - verticesFin(combinedSurface(:,1),:);
                     vectorMF3_2 = verticesFin(combinedSurface(:,3),:) - verticesFin(combinedSurface(:,2),:);
                     ss_tmp = cross(vectorMF3_1, vectorMF3_2,2);
@@ -129,19 +134,44 @@ function level_2_segmentation_main_speedup(spine_save_folder, spine_head_neck_sa
                     sphereMap(j) = abs(r1 - r2)/r2;
                 end
             end
-    
             sphereMap(sphereMap(:) == 0) = nan;
-            % sphereScoreMap should be acted as a weight applied on
-            % the curvature score
+    %%=========================================================================================================
+    % Calculate the centerline width score for the cylinder map in the 
+            [pathidxyz, width_eachp] = comSeg.calWidthfromVol(test_region, Vnieuw(neckpoint,:), Vnieuw(headpoint,:), resx, resy, resz); % width is from the tip of the shaft to the tip of the head
+            % 
+            % centerline_dist_2_start = cumsum(sqrt(sum((pathidxyz(2:end,:) - pathidxyz(1:end-1,:)).^2, 2)));
+            % centerline_dist_2_start = [0;centerline_dist_2_start(:)];
+            % ratio_neck_head = zeros(length(width),1) + nan;
+            % for i = 2:length(ratio_neck_head)-1
+            %     ratio_neck_head(i) = width(i+1) - width(i);
+            % end
+            width_max_point = find(width_eachp == max(width_eachp), 1,'last');
+
+            cylinderMap = zeros(length(idSelected),1) + nan;%indicates whether it is at the head part that 
+            for j = 1:length(cylinderMap)
+                cur_idxyz = Vnieuwx(idSelected(j),:);
+                nearest_centerlinep = find(sum((pathidxyz - cur_idxyz).^2,2) == min(sum((pathidxyz - cur_idxyz).^2,2)));
+                if(nearest_centerlinep <= width_max_point)
+                    cylinderMap(j) = 0;
+
+                end
+            end
+            % geo_score = normalize(sphereMap, 'range') + normalize(cylinderMap, 'range');
+            % idSelected = idSelected(~isnan(cylinderMap));
+            curvaturemap = newCurvature(idSelected);
+            curvaturemap(isnan(cylinderMap)) = nan;
+            sphereMap(isnan(cylinderMap)) = nan;
     %%=========================================================================================================
             % combine the curvature score and the geometry score
-            [~,p] = sort(newCurvature(idSelected));
-            curvatureOrder = newCurvature(idSelected);
+            [~,p] = sort(curvaturemap);
+            curvatureOrder = curvaturemap;
             curvatureOrder(p) = 1:length(p);
-            [~,p] = sort(sphereMap);
+            [~,p] = sort(sphereMap); %nans are at the last several positions
             geometryOrder = sphereMap;
             geometryOrder(p) = 1:length(p); 
+            geometryOrder(isnan(sphereMap)) = nan;
             ccScore = curvatureOrder + geometryOrder + abs(curvatureOrder - geometryOrder);
+            % ccScore = curvatureOrder + 2*geometryOrder;
             ccScore(ismember(idSelected, ccHead)) = nan;
             ccScore(ismember(idSelected, ccNeck)) = nan;
             id_point = idSelected(find(ccScore == min(ccScore),1));
@@ -181,11 +211,59 @@ function level_2_segmentation_main_speedup(spine_save_folder, spine_head_neck_sa
                 spineHead = double(head_volume)*3 + double(shaft_mask);
             end
             tifwrite(uint8(spineHead), fullfile(spine_head_neck_save_folder, num2str(k)));
-    
+            % whole_volume = imerode((head_volume*2 + neckx), se);
+            % 
+            % 
+            % [mF2_0, Vnieuw_0, allTetrax_0] = comSeg.genSurfaceTetraGraph_v3(test_region0, xxshift, yyshift, zzshift);
+            % %         allVertex = Vnieuw; % contains all the vertex in the volume
+            %         %make sure the vertices matrix are all on the surface 
+            % 
+            % vertex_unique_0 = unique(mF2_0(:));
+            % mappingx = zeros(max(vertex_unique_0),1);
+            % mappingx(vertex_unique_0(:)) = [1:length(vertex_unique_0(:))];
+            % mF2_0 = mappingx(mF2_0);
+            % Vnieuw_0 = Vnieuw_0(vertex_unique_0(:),:);
+            % % Not for computation, more to ensure the latter comparison to be reliable so that no extra points are included
+            % 
+            % surface_0_id = sub2ind([lenxtmp,lenytmp, lenztmp], Vnieuw_0(:,1), Vnieuw_0(:,2), Vnieuw_0(:,3));
+            % id_head = find(whole_volume(:) == 2);
+            % id_neck = find(whole_volume(:) == 1);
+            % bd_head_neck = utils.regionGrowxyz3D(id_head, 1, lenxtmp, lenytmp, lenztmp);
+            % bd_head_neck = intersect(bd_head_neck, id_neck);
+            % bd_head_neck = intersect(bd_head_neck, surface_0_id);
+            % [bd_head_neckx, bd_head_necky,bd_head_neckz] = ind2sub([lenxtmp , lenytmp, lenztmp], bd_head_neck);
+            % coor_cut_tmp = zeros(length(cutvex_fin),3);
+            % for j = 1:length(cutvex_fin)
+            %     dist_gd = sqrt((bd_head_neckx - Vnieuw(cutvex_fin(j),1)).^2 + (bd_head_necky - Vnieuw(cutvex_fin(j),2)).^2  + (bd_head_neckz - Vnieuw(cutvex_fin(j),3)).^2 );
+            %     id_small_grid_point = find(dist_gd == min(dist_gd),1);
+            %     coor_cut_tmp(j,:)  = [2*bd_head_neckx(id_small_grid_point), 2*bd_head_necky(id_small_grid_point), 5*bd_head_neckz(id_small_grid_point)];
+            % end
+            % [coor_headx,coor_heady,coor_headz]  = ind2sub([lenxtmp , lenytmp, lenztmp], id_head);
+            % coor_head = [coor_headx(:)*2, coor_heady(:)*2, coor_headz(:)*5];
+            % [coor_neckx, coor_necky, coor_neckz] = ind2sub([lenxtmp , lenytmp, lenztmp], id_neck);   
+            % coor_neck = [coor_neckx(:)*2, coor_necky(:)*2, coor_neckz(:)*5];
+            % coor_head_cell{k} = coor_head;
+            % coor_neck_cell{k} = coor_neck;
+            % save(fullfile(outputFolder, [namex,'_head.mat']), 'coor_head');
+            % save(fullfile(outputFolder, [namex,'_neck.mat']), 'coor_neck');
         catch ME
             % warning('Problem occured at %s',[num2str(k)]);
             continue;
         end
     end
+    % if(~isempty(outputFolder))
+    %     for k = 1:length(coor_neck_cell)
+    %         if(~isempty(coor_neck_cell{k}))
+    %             coor_head = coor_head_cell{k};
+    %             coor_neck = coor_neck_cell{k};
+    %             file_name = files_x(k).name;
+    %             namex = file_name(1:end-4);
+    %             save(fullfile(outputFolder, [namex,'_head.mat']), 'coor_head');
+    %             save(fullfile(outputFolder, [namex,'_neck.mat']), 'coor_neck');
+    %         else
+    %             disp(files_x(k).name)
+    %         end
+    %     end
+    % end
     toc;
     end
