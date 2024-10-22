@@ -1,0 +1,49 @@
+# Created by the script cgal_create_CMakeLists
+# This is the CMake script for compiling a set of CGAL applications.
+
+cmake_minimum_required(VERSION 3.1...3.23)
+
+project( Segmentation_SDF_Skeleton_Radius )
+
+
+# CGAL and its components
+find_package( CGAL QUIET COMPONENTS  )
+
+if ( NOT CGAL_FOUND )
+
+  message(STATUS "This project requires the CGAL library, and will not be compiled.")
+  return()  
+
+endif()
+
+
+#link_directories(${Eigen_INCLUDE_DIRS})
+
+# Boost and its components
+find_package( Boost REQUIRED )
+
+if ( NOT Boost_FOUND )
+
+  message(STATUS "This project requires the Boost library, and will not be compiled.")
+
+  return()  
+
+endif()
+
+find_package(Eigen3 REQUIRED)
+
+# include for local directory
+
+# include for local package
+
+
+# Creating entries for target: Segmentation_SDF_Skeleton_Radius
+# ############################
+
+add_executable( Segmentation_SDF_Skeleton_Radius  Segmentation_SDF_Skeleton_Radius.cpp )
+
+add_to_cached_list( CGAL_EXECUTABLE_TARGETS Segmentation_SDF_Skeleton_Radius )
+
+# Link the executable to CGAL and third-party libraries
+target_link_libraries(Segmentation_SDF_Skeleton_Radius PRIVATE CGAL::CGAL )
+

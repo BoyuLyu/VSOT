@@ -1,0 +1,3 @@
+﻿  test.cpp
+F:\EM_astrocyte\codes\EM_dendrite\resources\gen_tetra_surface\gen_tetra_surface\test.cpp(8,13): warning C4326: return type of 'main' should be 'int' instead of 'void'
+  gen_tetra_surface.vcxproj -> F:\EM_astrocyte\codes\EM_dendrite\resources\gen_tetra_surface\gen_tetra_surface\Debug\gen_tetra_surface.exe

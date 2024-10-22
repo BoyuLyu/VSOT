@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31911.196
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gen_tetra_surface", "gen_tetra_surface.vcxproj", "{BD599EA3-5180-4E4A-99B3-BD19581C680A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BD599EA3-5180-4E4A-99B3-BD19581C680A}.Debug|x64.ActiveCfg = Debug|x64
+		{BD599EA3-5180-4E4A-99B3-BD19581C680A}.Debug|x64.Build.0 = Debug|x64
+		{BD599EA3-5180-4E4A-99B3-BD19581C680A}.Debug|x86.ActiveCfg = Debug|Win32
+		{BD599EA3-5180-4E4A-99B3-BD19581C680A}.Debug|x86.Build.0 = Debug|Win32
+		{BD599EA3-5180-4E4A-99B3-BD19581C680A}.Release|x64.ActiveCfg = Release|x64
+		{BD599EA3-5180-4E4A-99B3-BD19581C680A}.Release|x64.Build.0 = Release|x64
+		{BD599EA3-5180-4E4A-99B3-BD19581C680A}.Release|x86.ActiveCfg = Release|Win32
+		{BD599EA3-5180-4E4A-99B3-BD19581C680A}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D821AD1C-F67E-4157-891F-B4D7211DB2A3}
+	EndGlobalSection
+EndGlobal
