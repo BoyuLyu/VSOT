@@ -1,0 +1,3 @@
+/home/boyu/Documents/run_segmentation_cgal/ofer_method/CMakeFiles/rebuild_cache.dir
+/home/boyu/Documents/run_segmentation_cgal/ofer_method/CMakeFiles/edit_cache.dir
+/home/boyu/Documents/run_segmentation_cgal/ofer_method/CMakeFiles/Segmentation_SDF_Skeleton_Radius.dir
