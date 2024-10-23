@@ -13,8 +13,8 @@ Morphological analysis of dendrites is critical to understanding the function an
 
 
 ## System requirements
-The code has been tested on Ubuntu 20.04 & 22.04
-MATLAB 2023b
+-The code has been tested on Ubuntu 20.04 & 22.04
+-MATLAB 2023b
 
 ## How to use
 
