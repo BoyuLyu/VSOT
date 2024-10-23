@@ -13,11 +13,19 @@ Morphological analysis of dendrites is critical to understanding the function an
 
 
 ## System requirements
--The code has been tested on Ubuntu 20.04 & 22.04
--MATLAB 2023b
+- The code has been tested on Ubuntu 20.04 & 22.04
+- MATLAB 2023b
 
 ## How to use
-
+### data
+Data can be downloaded from [here](https://virginiatech-my.sharepoint.com/:u:/g/personal/boyu93_vt_edu/EWu28K-ZjStNognr4h5H26wBErK5nY1EtrKRrnStCjhWfA?e=Nr27RH)
+### dependencies
+- gcc/g++
+- build-essential
+- [tinymesh](https://github.com/tatsy/tinymesh.git) please download and extract to ./resources
+- [iso2mesh](https://github.com/fangq/iso2mesh.git) please download and extract to ./resources
+### run
+After finishing downloading all the dependencies, run main.m for (1) Run the whole pipeline on an example dataset,(2) Reproduce the performance testing for level-1 & level-2 segmentation, (3) Plot the results of structural quantification.
 
 
 ## License
