@@ -83,7 +83,7 @@ skel_x = tiffreadVolume(fullfile(neuro_ds_folder, [curpsID,'_skel.tif']));
 radius_threshold = 1000/ds_ratio(1); % remove soma from the downsampled neuron 
 ratio_radius = cfg.ratio_radius; % the 
 offset = cfg.offset;
-mask_dendrite = preprocessing.remove_soma(neuro_ds_folder, curpsID, neuron_x, skel_x, resx, resy,resz,radius_threshold, ratio_radius, offset);
+preprocessing.remove_soma(neuro_ds_folder, curpsID, neuron_x, skel_x, resx, resy,resz,radius_threshold, ratio_radius, offset);
 
 %%==========================================================================
 

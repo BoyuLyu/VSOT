@@ -4,12 +4,12 @@ annotationFolder = fullfile(data_path,'/performance_testing_level_2_segmentation
 annotationFolder_gt_curves = fullfile(data_path,'/performance_testing_level_2_segmentation/gt_300/cut_cycle_ID_300');
 listx = dir([offFolder, '/*.off']);
 tamada_result_folder = fullfile(data_path,'/performance_testing_level_2_segmentation/dendrite_segmentation_peer_methods/tamada/results');
-our_method_cut_result_folder = fullfile(data_path,'/performance_testing_level_2_segmentation/dendrite_segmentation_peer_methods/our_method/result');
+our_method_cut_result_folder = fullfile(save_path,'/performance_testing_level_2_segmentation/dendrite_segmentation_peer_methods/our_method/result');
 ofer_output_folder = fullfile(data_path,'/performance_testing_level_2_segmentation/dendrite_segmentation_peer_methods/ofer/result');
 dorkenwalk_result_folder = fullfile(data_path,'/performance_testing_level_2_segmentation/dendrite_segmentation_peer_methods/dorkenwald/result');
 spine_save_folder = fullfile(data_path,'/performance_testing_level_2_segmentation/gt_300/volume_300_w_shaft');
-spine_head_neck_save_folder = fullfile(data_path,'/performance_testing_level_2_segmentation/dendrite_segmentation_peer_methods/our_method/volume_result');
-coordinate_output_folder = fullfile(data_path,'/performance_testing_level_2_segmentation/dendrite_segmentation_peer_methods/our_method/coor_result');
+spine_head_neck_save_folder = fullfile(save_path,'/performance_testing_level_2_segmentation/dendrite_segmentation_peer_methods/our_method/volume_result');
+coordinate_output_folder = fullfile(save_path,'/performance_testing_level_2_segmentation/dendrite_segmentation_peer_methods/our_method/coor_result');
 
 if(~exist(spine_head_neck_save_folder, 'dir'))
     mkdir(spine_head_neck_save_folder);

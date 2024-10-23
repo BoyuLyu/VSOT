@@ -10,7 +10,7 @@ function level_2_segmentation_main(spine_save_folder, spine_head_neck_save_folde
     tic;
     
     parfor k = 1:length(files_x)
-        disp(k)
+        % disp(k)
         try
             spineROI = tiffreadVolume(fullfile(spine_save_folder,[num2str(k),'.tif']));
             shaft_mask = spineROI == 1;

@@ -60,26 +60,49 @@ function [out_skel_small_scale, bbx, bbx_position] = get_bbx_from_split_skeleton
                  len_path = sum(sqrt((idX0(id_label_short(2:end)) - idX0(id_label_short(1:end-1))).^2.*32^2 + ...
                      (idY0(id_label_short(2:end)) - idY0(id_label_short(1:end-1))).^2.*32^2 +...
                      (idZ0(id_label_short(2:end)) - idZ0(id_label_short(1:end-1))).^2.*40^2));
-                 if(len_path > 1000 && ~any(ismember(id_label_short, ssPath)))
-                     bins_idx = [bins_idx;{[id_label_short(:)]}];
+                 if(length(id_label_short) > 100)
+                     bins_long_line = [bins_long_line;{[id_label_short(:)]}];
                  end
              end
          end
-         bins_long_line = [bins_long_line;{ssPath(:)}];
+         % bins_long_line = [bins_long_line;{ssPath(:)}];
     end
     bins_long_line = bins_long_line(:);
-    out_skel_small_scale(nodeID(cell2mat(bins_long_line))) = 1;
-    inputRegion_roi = bwlabeln(inputRegion);
-    inputRegion_roi_idx = label2idx(inputRegion_roi);
-    out_skel_large_scale = imresize3(out_skel_small_scale, [outLenx, outLeny, outLenz], 'Method','nearest');
-    inputRegion_roi_idx(cellfun(@(c) max(out_skel_large_scale(c)), inputRegion_roi_idx) == 0) = [];
+    % check all the geodesic distance between the points to the centerline to cluster the points
+    input_region_small = imresize3(inputRegion, [lenx, leny, lenz], 'Method','nearest');
+    input_region_small = imdilate(input_region_small, strel('sphere',3)); % to maintain the connectivity between parts
+    tic;
+    input_region_small_1d = input_region_small(:);
+    output_region_roi = uint8(zeros(lenx, leny, lenz));
+    dist_2_centerline = uint32(zeros(lenx, leny, lenz)) + 100000;
+    for k = 1:length(bins_long_line)
+        line_id = nodeID(bins_long_line{k});
+        out_skel_small_scale(line_id) = k;
+        tmp_centerline = false(lenx, leny, lenz);
+        tmp_centerline(line_id) = 1;
+        tmp_centerline_1d = tmp_centerline(:);
+        dist_1d = imchaferDist3D(input_region_small_1d, tmp_centerline_1d, lenx, leny, lenz, 32,32,40);
+        output_region_roi(uint32(dist_1d) < dist_2_centerline(:)) = k;
+        dist_2_centerline = min(dist_2_centerline, reshape(uint32(dist_1d), lenx, leny, lenz));
+    end
+    toc;
+
+    dist_2_centerline = [];
+    bins_long_line = [];
+    clear dist_2_centerline bins_long_line
+    output_region_roi = output_region_roi.*uint8(input_region_small);
+    out_skel_large_scale = imresize3(skel_x, [outLenx, outLeny, outLenz], 'Method','nearest');
+    output_region_roi_large_scale = imresize3(output_region_roi, [outLenx, outLeny, outLenz], 'Method','nearest');
+    output_region_roi_large_scale = imdilate(output_region_roi_large_scale, strel('sphere', 3));
+    output_region_roi_large_scale = output_region_roi_large_scale.*uint8(inputRegion);
+    output_region_roi_idx = label2idx(output_region_roi_large_scale);
     combinedRegion = inputRegion + out_skel_large_scale;
-    bbx = cell(length(inputRegion_roi_idx),1);
-    bbx_position = zeros(length(inputRegion_roi_idx),6);
-    for k = 1:length(inputRegion_roi_idx)
-        [idx, idy, idz] = ind2sub([outLenx, outLeny, outLenz],inputRegion_roi_idx{k});
+    bbx = cell(length(output_region_roi_idx),1);
+    bbx_position = zeros(length(output_region_roi_idx),6);
+    for k = 1:length(output_region_roi_idx)
+        [idx, idy, idz] = ind2sub([outLenx, outLeny, outLenz],output_region_roi_idx{k});
         tmp_combined = false([outLenx, outLeny, outLenz]);
-        tmp_combined(inputRegion_roi_idx{k}) = 1;
+        tmp_combined(output_region_roi_idx{k}) = 1;
         tmp_combined = double(tmp_combined).*combinedRegion ;
         tmpx = tmp_combined(min(idx):max(idx), min(idy):max(idy), min(idz):max(idz));
         bbx_position(k,:) = [min(idx),max(idx),min(idy),max(idy),min(idz),max(idz)];

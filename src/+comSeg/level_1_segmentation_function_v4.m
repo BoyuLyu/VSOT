@@ -24,7 +24,7 @@ for i = 1:length(mask_dendrite_cell)
                         tmp_den = mask_dendrite(winx(1,1):winx(1,2), winx(2,1):winx(2,2), winx(3,1):winx(3,2));
                         tmp_den_1d = tmp_den(:);
                         if(sum(tmp_den_1d) > 10000)
-                            disp([ix, iy, iz])
+                            % disp([ix, iy, iz])
         %                     tic;
                             tmp_dist_1d = edt_mex(tmp_den_1d, size(tmp_den,1), size(tmp_den,2), size(tmp_den,3), resx,resy,resz);
                             tmp_dist = reshape(tmp_dist_1d, size(tmp_den));

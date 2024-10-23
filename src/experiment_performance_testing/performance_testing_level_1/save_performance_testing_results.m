@@ -40,7 +40,15 @@ function save_performance_testing_results(data_path, quantification_save_path)
         spinetool_score(j,:) = [F1score_spinetool, p_spinetool, r_spinetool, J_spinetool];
         morph_score(j,:) = [F1score_morph, p_morph, r_morph, J_morph];
     end
-
+    fprintf('VSOT: F1 %f, precision %f,recall %f, Jeccard %f \n', ...
+        mean(us_score(:,1)), mean(us_score(:,2)), mean(us_score(:,3)),mean(us_score(:,4)));
+    fprintf('Neurd: F1 %f, precision %f,recall %f, Jeccard %f \n', ...
+        mean(neurd_score(:,1)), mean(neurd_score(:,2)), mean(neurd_score(:,3)),mean(neurd_score(:,4)));
+    fprintf('Spinetool: F1 %f, precision %f,recall %f, Jeccard %f \n', ...
+        mean(spinetool_score(:,1)), mean(spinetool_score(:,2)), mean(spinetool_score(:,3)),mean(spinetool_score(:,4)));
+    fprintf('Morph: F1 %f, precision %f,recall %f, Jeccard %f \n', ...
+        mean(morph_score(:,1)), mean(morph_score(:,2)), mean(morph_score(:,3)),mean(morph_score(:,4)));
+        
     fileID = fopen(fullfile(quantification_save_path, 'level_1_segmentation_accuracy.txt'), 'w');
     fprintf(fileID, 'VSOT: F1 %f, precision %f,recall %f, Jeccard %f \n', ...
         mean(us_score(:,1)), mean(us_score(:,2)), mean(us_score(:,3)),mean(us_score(:,4)));

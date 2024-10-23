@@ -23,7 +23,7 @@ catch ME
 end
 %%=========================================================================
 
-cd(fullfile(resource_folder, '/mex_build_test/graph_related/graph_mex'))
+cd(fullfile(resource_folder, '/graph_related/graph_mex'))
 
 mex solve_min_cut.cpp
 
@@ -47,7 +47,7 @@ catch ME
 end
 
 %%=========================================================================
-cd(fullfile(resource_folder, '/mex_build_test/src_mex/mex_EM_analysis/mex_EM_analysis'))
+cd(fullfile(resource_folder, '/src_mex/mex_EM_analysis/mex_EM_analysis'))
 
 mex imchaferDist3D.cpp
 
@@ -63,10 +63,10 @@ catch ME
 end
 
 %%=========================================================================
-cd(fullfile(resource_folder,'/mex_build_test/tinymesh_mex/tiny_mesh_mex'))
-path1 = fullfile(resource_folder,'/mex_build_test/tinymesh/src/tinymesh');
-path2 = fullfile(resource_folder,'/mex_build_test/tinymesh/src/tinymesh/ext/eigen');
-path3 = fullfile(resource_folder,'/mex_build_test/tinymesh/build/lib');
+cd(fullfile(resource_folder,'/tinymesh_mex/tiny_mesh_mex'))
+path1 = fullfile(resource_folder,'/tinymesh/src/tinymesh');
+path2 = fullfile(resource_folder,'/tinymesh/src/tinymesh/ext/eigen');
+path3 = fullfile(resource_folder,'/tinymesh/build/lib');
 eval(['mex CXXFLAGS=''$CXXFLAGS -std=c++14'' taubin_smooth_tiny_mesh_mex.cpp -I',path1,' -I',path2,' -L',path3,' -ltinymesh']);
 
 [spine_idx, spine_idy,spine_idz] = ind2sub(size(spine), find(spine(:) > 0));

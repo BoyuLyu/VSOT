@@ -68,7 +68,7 @@ function test_level_1_segmentation(data_path, save_path)
             for ix = 0:num_x
                 for iy = 0:num_y
                     for iz = 0:num_z
-                        % disp([ix, iy, iz])
+                        disp([ix, iy, iz])
                         winx = [max((1 + ix*lmx - round(lmx/2)), 1), min((ix + 1)*lmx + round(lmx/2), lenx);max((1 + iy*lmy - round(lmy/2)), 1), min((iy + 1)*lmy + round(lmy/2), leny);max((1 + iz*lmz - round(lmz/2)), 1), min((iz + 1)*lmz + round(lmz/2), lenz)];
                         tmp_den = mask_dendrite(winx(1,1):winx(1,2), winx(2,1):winx(2,2), winx(3,1):winx(3,2));
                         tmp_skel = mask_skel(winx(1,1):winx(1,2), winx(2,1):winx(2,2), winx(3,1):winx(3,2));
@@ -92,8 +92,13 @@ function test_level_1_segmentation(data_path, save_path)
         tifwrite(uint8(255*mask_spine), fullfile(outputfolder, cur_folder, 'spine_segmentation'));
         tifwrite(uint8(255*maskRemoveAll), fullfile(outputfolder, cur_folder, 'shaft_segmentation')); 
     end
-    gen_final_results_all_methods(data_path);
-    save_performance_testing_results(data_path, save_path);
+    mask_spine = [];
+    maskRemoveAll = [];
+    dist_dendrite = [];
+    mask_dendrite = [];
+    mask_skel = [];
+    % gen_final_results_all_methods(data_path);
+    % save_performance_testing_results(data_path, save_path);
 
 end
 
