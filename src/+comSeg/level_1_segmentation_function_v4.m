@@ -4,7 +4,7 @@ mask_spine_cell = cell(length(mask_dendrite_cell),1);
 disp('start extracting shafts')
 
 for i = 1:length(mask_dendrite_cell)
-    disp(i)
+%     disp(i)
     mask_dendrite = mask_dendrite_cell{i} > 0;
     mask_skel = mask_dendrite_cell{i} == 2;
     [lenx, leny, lenz] = size(mask_dendrite);
@@ -45,7 +45,7 @@ for i = 1:length(mask_dendrite_cell)
             mask_dendrite_dist = reshape(mask_dendrite_dist_1d, size(mask_dendrite));
         
         end
-
+    disp('start extracting shaft for first cluster')
         maskRemoveAll = comSeg.extract_shaft_v5(mask_dendrite, mask_skel, mask_dendrite_dist,xxshift,yyshift,resx, resy, resz);
         mask_spine_tmp = xor(mask_dendrite,maskRemoveAll);
         mask_spine_tmp_roi = bwlabeln(mask_spine_tmp);

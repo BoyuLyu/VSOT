@@ -73,8 +73,8 @@ function [out_skel_small_scale, bbx, bbx_position] = get_bbx_from_split_skeleton
     input_region_small = imdilate(input_region_small, strel('sphere',3)); % to maintain the connectivity between parts
     tic;
     input_region_small_1d = input_region_small(:);
-    output_region_roi = zeros(lenx, leny, lenz);
-    dist_2_centerline = zeros(lenx, leny, lenz) + 100000;
+    output_region_roi = uint8(zeros(lenx, leny, lenz));
+    dist_2_centerline = uint32(zeros(lenx, leny, lenz)) + 100000;
     for k = 1:length(bins_long_line)
         line_id = nodeID(bins_long_line{k});
         out_skel_small_scale(line_id) = k;
@@ -82,15 +82,19 @@ function [out_skel_small_scale, bbx, bbx_position] = get_bbx_from_split_skeleton
         tmp_centerline(line_id) = 1;
         tmp_centerline_1d = tmp_centerline(:);
         dist_1d = imchaferDist3D(input_region_small_1d, tmp_centerline_1d, lenx, leny, lenz, 32,32,40);
-        output_region_roi(dist_1d < dist_2_centerline(:)) = k;
-        dist_2_centerline = min(dist_2_centerline, reshape(dist_1d, lenx, leny, lenz));
+        output_region_roi(uint32(dist_1d) < dist_2_centerline(:)) = k;
+        dist_2_centerline = min(dist_2_centerline, reshape(uint32(dist_1d), lenx, leny, lenz));
     end
     toc;
-    output_region_roi = output_region_roi.*input_region_small;
+
+    dist_2_centerline = [];
+    bins_long_line = [];
+    clear dist_2_centerline bins_long_line
+    output_region_roi = output_region_roi.*uint8(input_region_small);
     out_skel_large_scale = imresize3(skel_x, [outLenx, outLeny, outLenz], 'Method','nearest');
     output_region_roi_large_scale = imresize3(output_region_roi, [outLenx, outLeny, outLenz], 'Method','nearest');
     output_region_roi_large_scale = imdilate(output_region_roi_large_scale, strel('sphere', 3));
-    output_region_roi_large_scale = output_region_roi_large_scale.*inputRegion;
+    output_region_roi_large_scale = output_region_roi_large_scale.*uint8(inputRegion);
     output_region_roi_idx = label2idx(output_region_roi_large_scale);
     combinedRegion = inputRegion + out_skel_large_scale;
     bbx = cell(length(output_region_roi_idx),1);

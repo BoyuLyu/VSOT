@@ -43,8 +43,10 @@ save_path_1 = '/work/boyu/EM_astrocyte/materials_for_paper_VSOT/VSOT_data_paired
 if(~exist(save_path_1, 'dir'))
     mkdir(save_path_1);
 end
+tic;
 test_level_1_segmentation(data_path, save_path_1);
 disp('Level-1 segmentation performance testing finished');
+toc;
 %%==========================================================================
 % Run VSOT for level-2 segmentation and test the performance
 save_path_2 = '/work/boyu/EM_astrocyte/materials_for_paper_VSOT/VSOT_data_paired_with_codes/results/test_level_2_segmentation/';
