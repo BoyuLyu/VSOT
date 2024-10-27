@@ -1,4 +1,5 @@
 # VSOT
+**Volume-Surface Optimization for Accurate Nanostructure Analysis of Dendrites**
 
 ### Table of contents
 - [Introduction](#Introduction)
