@@ -16,16 +16,23 @@ Morphological analysis of dendrites is critical to understanding the function an
 - The code has been tested on Ubuntu 20.04 & 22.04
 - MATLAB 2023b
 
-## How to use
+## Run on code ocean
+[code ocean compute capsule](https://codeocean.com/capsule/3574450/tree)
+Free to run VSOT, with our example data as well as your own data.
+## How to use locally
 ### data
-Data can be downloaded from [here](https://virginiatech-my.sharepoint.com/:u:/g/personal/boyu93_vt_edu/EWu28K-ZjStNognr4h5H26wBErK5nY1EtrKRrnStCjhWfA?e=Nr27RH)
+- Test data can be downloaded from [here](https://virginiatech-my.sharepoint.com/:u:/g/personal/boyu93_vt_edu/EWu28K-ZjStNognr4h5H26wBErK5nY1EtrKRrnStCjhWfA?e=Nr27RH)
+- Multi-layer cortex data constructed from MICrONS can be requested from the author Boyu Lyu [boyu93@vt.edu](mailto:boyu93@vt.edu)
 ### dependencies
 - gcc/g++
 - build-essential
 - [tinymesh](https://github.com/tatsy/tinymesh.git) please download and extract to ./resources
 - [iso2mesh](https://github.com/fangq/iso2mesh.git) please download and extract to ./resources
 ### run
-After finishing downloading all the dependencies, run main.m for (1) Run the whole pipeline on an example dataset,(2) Reproduce the performance testing for level-1 & level-2 segmentation, (3) Plot the results of structural quantification.
+After finishing downloading all the dependencies, run main.m for
+- (1) Run the whole pipeline on an example dataset
+- (2) Reproduce the performance testing for level-1 & level-2 segmentation
+- (3) Plot the results of structural quantification.
 
 
 ## License
