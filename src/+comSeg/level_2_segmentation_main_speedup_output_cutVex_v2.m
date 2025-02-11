@@ -172,7 +172,7 @@ function level_2_segmentation_main_speedup_output_cutVex_v2(spine_save_folder, s
             geometryOrder = sphereMap;
             geometryOrder(p) = 1:length(p); 
             geometryOrder(isnan(sphereMap)) = nan;
-            ccScore = curvatureOrder + geometryOrder + abs(curvatureOrder - geometryOrder);
+            ccScore = curvatureOrder + geometryOrder;
 
             ccScore(ismember(idSelected, ccHead)) = nan;
             ccScore(ismember(idSelected, ccNeck)) = nan;
