@@ -23,62 +23,75 @@ addpath('/home/boyu/Documents/src_mex/mex_EM_analysis/mex_EM_analysis')
 %
 % Run kimimaro for the skeleton generation 
 %% step 2 run our method
-list_of_folders = ["D5_Apical_Spines","D5_Branch_1","D5_Branch_2","D5_Branch_3","D5_Branch_4","D5_Branch_5"];
+lambda_all = [0.01:0.04:0.25];
+parfor lambda_i = 1:length(lambda_all)
+    lambda = lambda_all(lambda_i);
+    list_of_folders = ["D5_Apical_Spines","D5_Branch_1","D5_Branch_2","D5_Branch_3","D5_Branch_4","D5_Branch_5"];
 
 
-resx = 24;
-resy = 24;
-resz = 30;
+    resx = 24;
+    resy = 24;
+    resz = 30;
 
-rootfolder = '/work/boyu/EM_astrocyte/test_segmentation_samples/dendrite_spine_segmentation';
-for i = 1:length(list_of_folders)
-    cur_folder = convertStringsToChars(list_of_folders(i));
-    mask_dendrite = tiffreadVolume(fullfile(rootfolder, cur_folder, [cur_folder,'_dendrite_volume.tif.tif'])) > 0;
-    mask_skel = tiffreadVolume(fullfile(rootfolder, cur_folder, 'ds_skeleton.tif')) > 0;
-    dist_dendrite = cal_edt_dendrite(mask_dendrite, resx, resy, resz);
-    [lenx, leny ,lenz] = size(mask_dendrite);
-    % when the size of the dendrite shaft is too large, like the length
-    % is larger than 500, then split the volume into several chunks and
-    % do the segmentation in each separate chunk
-    % running directly on a very large volume will likely cost many
-    % memory and at the same time it will make the surface biased to the
-    % global constraint. In stead of local smooth surface.
-    if(lenx > 600 || leny > 600 || lenz > 600)
-        maskRemoveAll = false(lenx, leny ,lenz);
-        lmx = min(lenx, 400);
-        lmy = min(leny, 400);
-        lmz = min(lenz, 400);
-        num_x = floor(lenx/ lmx);
-        num_y = floor(leny/ lmy);
-        num_z = floor(lenz/ lmz);
-        for ix = 0:num_x
-            for iy = 0:num_y
-                for iz = 0:num_z
-                     disp([ix, iy, iz])
-                    winx = [max((1 + ix*lmx - round(lmx/2)), 1), min((ix + 1)*lmx + round(lmx/2), lenx);max((1 + iy*lmy - round(lmy/2)), 1), min((iy + 1)*lmy + round(lmy/2), leny);max((1 + iz*lmz - round(lmz/2)), 1), min((iz + 1)*lmz + round(lmz/2), lenz)];
-                    tmp_den = mask_dendrite(winx(1,1):winx(1,2), winx(2,1):winx(2,2), winx(3,1):winx(3,2));
-                    tmp_skel = mask_skel(winx(1,1):winx(1,2), winx(2,1):winx(2,2), winx(3,1):winx(3,2));
-                    if(sum(tmp_skel(:)) > 100) 
-                        tmp_dist = dist_dendrite(winx(1,1):winx(1,2), winx(2,1):winx(2,2), winx(3,1):winx(3,2));
-                        % run segmentation based on the surface_volume optimization
-                        maskRemove_tmp = level_1_segmentation_function_fin(tmp_den, tmp_skel, tmp_dist,resx, resy, resz);
-                        maskRemoveAll(winx(1,1):winx(1,2), winx(2,1):winx(2,2), winx(3,1):winx(3,2)) = maskRemove_tmp | maskRemoveAll(winx(1,1):winx(1,2), winx(2,1):winx(2,2), winx(3,1):winx(3,2));
+    rootfolder = '/work/boyu/EM_astrocyte/materials_for_paper_VSOT/test_segmentation_samples/dendrite_spine_segmentation';
+    
+    for i = 1:length(list_of_folders)
+        cur_folder = convertStringsToChars(list_of_folders(i));
+        mask_dendrite = tiffreadVolume(fullfile(rootfolder, cur_folder, [cur_folder,'_dendrite_volume.tif.tif'])) > 0;
+        mask_skel = tiffreadVolume(fullfile(rootfolder, cur_folder, 'ds_skeleton.tif')) > 0;
+        dist_dendrite = cal_edt_dendrite(mask_dendrite, resx, resy, resz);
+        [lenx, leny ,lenz] = size(mask_dendrite);
+        % when the size of the dendrite shaft is too large, like the length
+        % is larger than 500, then split the volume into several chunks and
+        % do the segmentation in each separate chunk
+        % running directly on a very large volume will likely cost many
+        % memory and at the same time it will make the surface biased to the
+        % global constraint. In stead of local smooth surface.
+        if(lenx > 600 || leny > 600 || lenz > 600)
+            maskRemoveAll = false(lenx, leny ,lenz);
+            lmx = min(lenx, 400);
+            lmy = min(leny, 400);
+            lmz = min(lenz, 400);
+            num_x = floor(lenx/ lmx);
+            num_y = floor(leny/ lmy);
+            num_z = floor(lenz/ lmz);
+            for ix = 0:num_x
+                for iy = 0:num_y
+                    for iz = 0:num_z
+                        disp([ix, iy, iz])
+                        winx = [max((1 + ix*lmx - round(lmx/2)), 1), min((ix + 1)*lmx + round(lmx/2), lenx);max((1 + iy*lmy - round(lmy/2)), 1), min((iy + 1)*lmy + round(lmy/2), leny);max((1 + iz*lmz - round(lmz/2)), 1), min((iz + 1)*lmz + round(lmz/2), lenz)];
+                        tmp_den = mask_dendrite(winx(1,1):winx(1,2), winx(2,1):winx(2,2), winx(3,1):winx(3,2));
+                        tmp_skel = mask_skel(winx(1,1):winx(1,2), winx(2,1):winx(2,2), winx(3,1):winx(3,2));
+                        if(sum(tmp_skel(:)) > 100) 
+                            tmp_dist = dist_dendrite(winx(1,1):winx(1,2), winx(2,1):winx(2,2), winx(3,1):winx(3,2));
+                            % run segmentation based on the surface_volume optimization
+                            maskRemove_tmp = level_1_segmentation_function_fin_2(tmp_den, tmp_skel, tmp_dist,resx, resy, resz, lambda);
+                            maskRemoveAll(winx(1,1):winx(1,2), winx(2,1):winx(2,2), winx(3,1):winx(3,2)) = maskRemove_tmp | maskRemoveAll(winx(1,1):winx(1,2), winx(2,1):winx(2,2), winx(3,1):winx(3,2));
+                        end
                     end
                 end
             end
+        else
+            maskRemoveAll = level_1_segmentation_function_fin_2(mask_dendrite,mask_skel,dist_dendrite, resx, resy, resz,lambda);
         end
+    %     
+        mask_spine = xor(mask_dendrite,maskRemoveAll);
+        save_path = fullfile(rootfolder,  'our_method_result', cur_folder,['lambda_index_test_2', num2str(lambda_i)]);
+        if(~exist(save_path, 'dir'))
+            mkdir(save_path);
+        end
+        tifwrite(uint8(255*mask_spine), fullfile(save_path, 'spine_segmentation'));
+        tifwrite(uint8(255*maskRemoveAll), fullfile(save_path, 'shaft_segmentation'));    
+
     end
-%     out_dendrite = level_1_segmentation_function_fin(mask_dendrite,mask_skel,dist_dendrite, resx, resy, resz);
-    mask_spine = xor(mask_dendrite,maskRemoveAll);
-    tifwrite(uint8(255*mask_spine), fullfile(rootfolder, cur_folder, 'spine_segmentation'));
-    tifwrite(uint8(255*maskRemoveAll), fullfile(rootfolder, cur_folder, 'shaft_segmentation'));    
-
-end
 
 
-for i = 1:length(list_of_folders)
-    cur_folder = convertStringsToChars(list_of_folders(i));
-    mask_spine = tiffreadVolume(fullfile(rootfolder, cur_folder, 'spine_segmentation.tif')) > 0;
-    mask_shaft = tiffreadVolume(fullfile(rootfolder, cur_folder, 'shaft_segmentation.tif')) > 0;
-    outx = mask_spine*2 + mask_shaft;
+    % for i = 1:length(list_of_folders)
+    %     cur_folder = convertStringsToChars(list_of_folders(i));
+    %     mask_spine = tiffreadVolume(fullfile(rootfolder, cur_folder, 'spine_segmentation.tif')) > 0;
+    %     mask_shaft = tiffreadVolume(fullfile(rootfolder, cur_folder, 'shaft_segmentation.tif')) > 0;
+    %     outx = mask_spine*2 + mask_shaft;
+    % end
+
+
 end

@@ -1,4 +1,5 @@
-function [singleSynHeadVolume,singleSynHeadMeanRadius,singleSynNeckLength, singleSynNeckSection, singleSynNeckMeanRadius] =...
+function [singleSynHeadVolume,singleSynHeadMeanRadius,singleSynNeckLength, singleSynNeckSection, singleSynNeckMeanRadius...
+    ,singleSynNeckStd] =...
     genDendriteSpineScore_nocleft(spineID, lenx, leny, lenz,spineHNROI, resx, resy, resz)
 
     % addpath('/home/boyu/Documents/edt_mex/edt_mex/edt_mex')
@@ -22,6 +23,22 @@ function [singleSynHeadVolume,singleSynHeadMeanRadius,singleSynNeckLength, singl
     % check if the spine contains only single 3 or single 2
     if(sum(spineHNROIx(:) == 3) == 0 || sum(spineHNROIx(:) == 2) == 0)
         spineHNROI_head = double(spineHNROIx > 1);
+        % Generate the surface of the volume
+        % [faces, vertices] = isosurface(spineHNROI_head, 1e-4);
+        % % Adjust the vertices to account for the resolution
+        % vertices(:,1) = vertices(:,1) * resx;
+        % vertices(:,2) = vertices(:,2) * resy;
+        % vertices(:,3) = vertices(:,3) * resz;
+        % % Plot the surface
+        % % Calculate the volume and surface area based on the mesh surface
+        % vectorMF3_1 = vertices(faces(:,3),:) - vertices(faces(:,1),:);
+        % vectorMF3_2 = vertices(faces(:,3),:) - vertices(faces(:,2),:);
+        % ss_tmp = cross(vectorMF3_1, vectorMF3_2,2);
+        % ss = 1/2*sum(sqrt(ss_tmp(:,1).^2 + ss_tmp(:,2).^2 + ss_tmp(:,3).^2));
+        % volume = abs(comSeg.calVolfromMesh(faces, vertices));                                               
+        % r1 = (volume/(4*pi/3))^(1/3);
+        % r2 = sqrt(ss/(4*pi));
+        % sphereMap = abs(r1 - r2)/r2;
         spineHNROI_head_roi = bwlabeln(spineHNROI_head);
         spineHNROI_head_roi_idx = label2idx(spineHNROI_head_roi);
         len_roi = cellfun(@length, spineHNROI_head_roi_idx);
@@ -29,29 +46,31 @@ function [singleSynHeadVolume,singleSynHeadMeanRadius,singleSynNeckLength, singl
         spineHNROI_neck = zeros(size(spineHNROIx));
         singleSynHeadVolume = length(hid);
         se  = strel('sphere', 1);
-        singleSynHeadMeanRadius = (singleSynHeadVolume*resx*resy*resz/4*3/pi)^(1/3);
+        singleSynHeadMeanRadius = 0;
         % cleftID = find(cleftx(:) == 1);
         [lenx, leny, lenz] = size(spineHNROIx);
-        % [cleftIDx, cleftIDy,cleftIDz] = ind2sub([lenx, leny, lenz], cleftID);
-        % cleftIDxyz = [cleftIDx(:)*16, cleftIDy(:)*16,cleftIDz(:)*40];
-        % [coeff,score_w,latent] = pca(cleftIDxyz);  
-        % 
-        % [hidx, hidy, hidz] = ind2sub([lenx, leny, lenz], hid);
-        % hidxyz = [hidx(:)*16, hidy(:)*16, hidz(:)*40];
-        % hidxyz = (hidxyz - mean(cleftIDxyz,1))*coeff;
-        % % check along the z direction, group all the points within the range of
-        % % the same bin
         spineID = find(spineHNROIx(:) > 0);
-        % maxRadiusx = zeros(length(max(round(hidxyz(:,3)))), 1);
-        % for i = 0:max(round(hidxyz(:,3))) - 1
-        %     tmpx = hidxyz(hidxyz(:,3) >= i & hidxyz(:,3) < (i+10),:);
-        %     centerxy = [mean(tmpx(:,1)), mean(tmpx(:,2))];
-        %     distAll = sqrt((tmpx(:,1) - centerxy(1)).^2 + (tmpx(:,2) - centerxy(2)).^2);
-        %     maxRadiusx(i + 1) = mean(distAll); 
-        % end
+
         % singleSynHeadMeanRadius = max(maxRadiusx);
     else
         spineHNROI_head = double(spineHNROIx == 3);
+
+        % [faces, vertices] = isosurface(spineHNROI_head, 0.5);
+        % Adjust the vertices to account for the resolution
+        % vertices(:,1) = vertices(:,1) * resx;
+        % vertices(:,2) = vertices(:,2) * resy;
+        % vertices(:,3) = vertices(:,3) * resz;
+        % % Plot the surface
+        % % Calculate the volume and surface area based on the mesh surface
+        % vectorMF3_1 = vertices(faces(:,3),:) - vertices(faces(:,1),:);
+        % vectorMF3_2 = vertices(faces(:,3),:) - vertices(faces(:,2),:);
+        % ss_tmp = cross(vectorMF3_1, vectorMF3_2,2);
+        % ss = 1/2*sum(sqrt(ss_tmp(:,1).^2 + ss_tmp(:,2).^2 + ss_tmp(:,3).^2));
+        % volume = abs(comSeg.calVolfromMesh(faces, vertices));                                               
+        % r1 = (volume/(4*pi/3))^(1/3);
+        % r2 = sqrt(ss/(4*pi));
+        % sphereMap = abs(r1 - r2)/r2;
+
         spineHNROI_head_roi = bwlabeln(spineHNROI_head);
         spineHNROI_head_roi_idx = label2idx(spineHNROI_head_roi);
         len_roi = cellfun(@length, spineHNROI_head_roi_idx);
@@ -59,7 +78,7 @@ function [singleSynHeadVolume,singleSynHeadMeanRadius,singleSynNeckLength, singl
         spineHNROI_neck = double(spineHNROIx == 2);
         singleSynHeadVolume = length(hid);
         se  = strel('sphere', 1);
-        singleSynHeadMeanRadius = (singleSynHeadVolume*resx*resy*resz/4*3/pi)^(1/3);
+        singleSynHeadMeanRadius = 0; % this is to differentiate from the radius calculated from the spine heads with PSD
         % cleftID = find(cleftx(:) == 1);
         [lenx, leny, lenz] = size(spineHNROIx);
         % [cleftIDx, cleftIDy,cleftIDz] = ind2sub([lenx, leny, lenz], cleftID);
@@ -128,26 +147,35 @@ function [singleSynHeadVolume,singleSynHeadMeanRadius,singleSynNeckLength, singl
             ssPath = shortestpath(G,nodeMap(id1),nodeMap(id2));
             pathID = curID(ssPath);
             pathID = pathID(spineHNROIx(pathID) == 2);
-            if(length(pathID) >=2)
-                linex = zeros(lenx, leny, lenz);
-                linex(pathID) = 1;
-                linex_output = imdilate(linex, se);
+            if(length(pathID) >=3)
+                % linex = zeros(lenx, leny, lenz);
+                % linex(pathID) = 1;
+                % linex_output = imdilate(linex, se);
         %         tifwrite(uint8(linex_output), '../test_centerline' )
                 [pathIDx, pathIDy, pathIDz] = ind2sub([lenx, leny, lenz], pathID);
                 dist_pair = sqrt((pathIDx(2:end) - pathIDx(1:end-1)).^2.*resx^2 + (pathIDy(2:end) - pathIDy(1:end-1)).^2.*resy^2+ (pathIDz(2:end) - pathIDz(1:end-1)).^2.*resz^2);
                 singleSynNeckLength = sum(dist_pair);
+                width_all = dist_dendrite(pathID);
+                singleSynNeckMeanRadius = mean(width_all);
+                singleSynNeckStd = std(width_all);
             else
                 singleSynNeckLength = 0;
+                singleSynNeckStd = nan;
+                singleSynNeckMeanRadius = nan;
             end
         else
             singleSynNeckLength = 0;
+            singleSynNeckStd = nan;
+            singleSynNeckMeanRadius = nan;
         end
 
           
     else
         singleSynNeckLength = 0;
+        singleSynNeckStd = nan;
+        singleSynNeckMeanRadius = nan;
     end
     singleSynNeckSection = sum(spineHNROI_neck(:))*resx*resy*resz/ singleSynNeckLength;
-    singleSynNeckMeanRadius = sqrt(singleSynNeckSection/ pi);
+    % singleSynNeckMeanRadius = sqrt(singleSynNeckSection/ pi);
 
 end

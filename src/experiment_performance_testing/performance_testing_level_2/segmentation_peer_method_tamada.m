@@ -1,9 +1,10 @@
-clear
-offFolder = '/work/boyu/EM_astrocyte/test_segmentation_samples/gt_300/surface_off_300';
-annotationFolder = '/work/boyu/EM_astrocyte/test_segmentation_samples/gt_300/annotation_json_300';
-annotationFolder_gt_curves = '/work/boyu/EM_astrocyte/test_segmentation_samples/gt_300/cut_cycle_ID_300';
+function segmentation_peer_method_tamada(offFolder, tif_folder,tamada_result_folder)
+
+% clear
+% offFolder = '/work/boyu/EM_astrocyte/test_segmentation_samples/gt_300/surface_off_300';
 listx = dir([offFolder, '/*.off']);
-tamada_result_folder = '/work/boyu/EM_astrocyte/dendrite_segmentation_peer_methods/tamada/results';
+% tamada_result_folder = '/work/boyu/EM_astrocyte/dendrite_segmentation_peer_methods/tamada/results';
+% tif_folder = '/work/boyu/EM_astrocyte/test_segmentation_samples/gt_300/volume_300_w_shaft';
 for j = 1:length(listx)
     
     namex = listx(j).name;
@@ -14,6 +15,15 @@ for j = 1:length(listx)
     [Pts,Tri] = read_off(fullfile(offFolder, [namex , '.off']));
     Tri = Tri';
     Pts = Pts';
+    Tri_center = (Pts(Tri(:,1),:) + Pts(Tri(:,2),:) + Pts(Tri(:,3),:))/3;
+
+    vol_target = tiffreadVolume(fullfile(tif_folder, [namex, '.tif']));
+    shaft_region = vol_target == 1;
+    [lenx, leny, lenz] = size(vol_target);
+    [id_shaft_x, id_shaft_y, id_shaft_z] = ind2sub([lenx, leny, lenz], find(shaft_region(:) == 1));
+    id_shaft_x = id_shaft_x(:)*2;
+    id_shaft_y = id_shaft_y(:)*2;
+    id_shaft_z = id_shaft_z(:)*5;
 
     fid = fopen(fullfile(tamada_result_folder, [namex,'.json'])); % Opening the file
     raw = fread(fid,inf); % Reading the contents
@@ -56,17 +66,65 @@ for j = 1:length(listx)
     % remove any repetitve segment in the part
     edges_all = [curve_vertex_to_compare3(1:end), [curve_vertex_to_compare3(2:end);curve_vertex_to_compare3(1)]];
     edges_all = sort(edges_all, 2);
-    [C,ia,ic] = unique(edges_all, 'rows');
-    countx = accumarray(ic, 1);
-    edge_2_rm = C(countx == 2,:);
-    for kk = 1:size(edge_2_rm,1)
-        curve_vertex_to_compare3(edges_all(:,1) == edge_2_rm(kk,1) & edges_all(:,2) == edge_2_rm(kk,2),:) = [];
-        edges_all(edges_all(:,1) == edge_2_rm(kk,1) & edges_all(:,2) == edge_2_rm(kk,2),:) = [];
-    end
-    nodeList = curve_vertex_to_compare3(:,1);
+    %obtain the face separation
+    edge_graph = [Tri(:,1), Tri(:,2), [1:size(Tri,1)]';Tri(:,1), Tri(:,3),[1:size(Tri,1)]';Tri(:,2), Tri(:,3),[1:size(Tri,1)]'];
+    edge_graph(:,1:2) = sort(edge_graph(:,1:2), 2);
+    edge_graph = sortrows(edge_graph, [1,2]);
+    % cut_curve_edges = [curve_vertex(1:end),[curve_vertex(2:end);curve_vertex(1)]];
+    % cut_curve_edges = sort(cut_curve_edges, 2);
+    edge_graph_2 = edge_graph;
+    edge_graph_2(ismember(edge_graph_2(:,1:2), edges_all, 'rows'),:) = [];
+    edge_G = graph(edge_graph_2(1:2:end,3), edge_graph_2(2:2:end,3));
+    [bins, binsizes] = conncomp(edge_G);
+    if(length(binsizes) == 1)
+        warning('incomplete separation %s',namex);
+    else
+        face_label = zeros(size(Tri,1),1);
+        face_label(bins == 1) = 1;
+        face_label(bins == 2) = 2;
+        bins_idx = label2idx(bins);
+        [~, sortedID] = sort(cellfun(@length, bins_idx), 'descend');
+        bins_idx = bins_idx(sortedID(1:2));
+        part1 = bins_idx{1};
+        part2 = bins_idx{2};
+        face_center_label_1 = Tri_center(part1,:);
+        face_center_label_2 = Tri_center(part2,:);
+        dist_all_1 = sqrt((id_shaft_x - face_center_label_1(:,1)').^2 + ...
+            (id_shaft_y - face_center_label_1(:,2)').^2 + ...
+            (id_shaft_z - face_center_label_1(:,3)').^2);
+        dist_all_2 = sqrt((id_shaft_x - face_center_label_2(:,1)').^2 + ...
+            (id_shaft_y - face_center_label_2(:,2)').^2 + ...
+            (id_shaft_z - face_center_label_2(:,3)').^2);
+        face_label = face_label.*0;
+        if(min(dist_all_1(:)) > min(dist_all_2(:)))
+            face_label(part1) = 2;
+            face_label(part2) = 1;
+        else
+            face_label(part2) = 2;
+            face_label(part1) = 1;
+        end
+        head_neck_label = face_label;
+        save(fullfile(tamada_result_folder,[namex,'.face_label.mat']), 'head_neck_label');
 
+
+        [C,ia,ic] = unique(edges_all, 'rows');
+        countx = accumarray(ic, 1);
+        edge_2_rm = C(countx == 2,:);
+        for kk = 1:size(edge_2_rm,1)
+            curve_vertex_to_compare3(edges_all(:,1) == edge_2_rm(kk,1) & edges_all(:,2) == edge_2_rm(kk,2),:) = [];
+            edges_all(edges_all(:,1) == edge_2_rm(kk,1) & edges_all(:,2) == edge_2_rm(kk,2),:) = [];
+        end
+        nodeList = curve_vertex_to_compare3(:,1);
+        writematrix(nodeList, fullfile(tamada_result_folder,[namex,'.cut.txt']));
     
-    writematrix(nodeList, fullfile(tamada_result_folder,[namex,'_cut.txt']));
+    end
+
+
+
+
+
+
+
 end
 
 

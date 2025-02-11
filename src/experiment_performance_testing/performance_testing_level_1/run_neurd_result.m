@@ -1,6 +1,6 @@
 %% test the methods for level-1 segmentation 
 clear
-current_branch = 'D5_Branch_5';
+current_branch = 'D5_Branch_1';
 rootFolder = ['/work/boyu/EM_astrocyte/test_segmentation_samples/dendrite_spine_segmentation/spinetools_and_our_and_method_3_biotech_result/',current_branch];
 [Pts,Tri] = read_off(fullfile(rootFolder, ['dendrite.off']));
 bin_img = tiffreadVolume(fullfile(rootFolder, [current_branch, '_dendrite_volume.tif.tif'])) > 0;

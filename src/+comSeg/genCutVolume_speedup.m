@@ -92,7 +92,8 @@ end
         head_volume_y(head_volume_y > leny | head_volume_y < 1 ) =nan;
         head_volume_z = head_volume(:,3) + zzshift0(:)';
         head_volume_z(head_volume_z > lenz | head_volume_z < 1 ) =nan;
-        head_volume_output = sub2ind([lenx, leny, lenz],head_volume_x(:), head_volume_y(:), head_volume_z(:));
+        head_volume_output = head_volume_x(:) + (head_volume_z(:) - 1).*(lenx*leny) + (head_volume_y(:)-1).*lenx;
+        % head_volume_output = sub2ind([lenx, leny, lenz],head_volume_x(:), head_volume_y(:), head_volume_z(:));
         head_volume_output = unique(head_volume_output);
         head_volume_output(isnan(head_volume_output)) = [];
         head_volume_img(head_volume_output) = 1;

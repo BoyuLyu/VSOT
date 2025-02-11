@@ -228,7 +228,6 @@ tic;
                     singleSynNeckLength(kk) = single_features_all.neckLengthx;%s3
                     singleSynNeckSection(kk) = single_features_all.neckSectionx;%s4   
                     singleSynNeckMeanRadius(kk) = single_features_all.neckMeanRadiusx;%s5
-            
                     singleSynapticCleftSize(kk) = single_features_all.singleSynapticCleftSize;%s6
                     sinsperimeterRatio(kk) = single_features_all.sinsperimeterRatio;%s7
                     sinsperimeterWeightedWrappingArea(kk) = single_features_all.sinsperimeterWeightedWrappingArea;%s8

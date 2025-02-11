@@ -49,7 +49,47 @@ function dendrite_feature  = quantify_dendrite_sub_func(curpsID, lenx, leny, len
     mask_dendrite_ds = mask_dendrite_ds_all - neuron_x_removal > 0;
     mask_dendrite_ds_1d = mask_dendrite_ds(:);
     mask_dendrite_ds_rm_edt = edt_mex(mask_dendrite_ds_1d,lenx,leny, lenz, 5*resx,5*resy,5*resz);
-    thickness_skel_parts = cellfun(@(c) mean(mask_dendrite_ds_rm_edt(c)), skel_x_parts_roi_idx); 
+
+    mask_dendrite_dt_2D = zeros(lenx, leny, lenz);
+    for i = 1:lenz
+        mask_dendrite_dt_2D(:,:,i) = bwdist(1 - mask_dendrite_ds(:,:,i));
+    end
+    %refine the skeleton to force it closer to the centerline 
+    curDendriteDist2 = max(mask_dendrite_dt_2D(:)) - mask_dendrite_dt_2D;
+    nodeMap = zeros(lenx, leny, lenz);
+    totalID = find(mask_dendrite_ds(:) > 0);
+    nodeMap(totalID) = 1:length(totalID);
+    nodeMap(1,:,:) = 0;
+    nodeMap(size(nodeMap, 1),:,:) = 0;
+    nodeMap(:,1,:) = 0;
+    nodeMap(:,size(nodeMap, 2),:) = 0; 
+    nei26 = regionGrow3D(totalID, double(lenx), double(leny), double(lenz), xxshift, yyshift);
+    score = sqrt(curDendriteDist2(nei26(:,1)).*curDendriteDist2(nei26(:,2)));
+    nodex = [nodeMap(nei26),score];
+    nodex(nodex(:,1) == 0 | nodex(:,2) ==0,:) = [];
+    G = graph(nodex(:,1), nodex(:,2), nodex(:,3));
+    skel_x_parts_roi_idx_dist_center = skel_x_parts_roi_idx;
+    for i = 1:length(skel_x_parts_roi_idx)
+        curID = skel_x_parts_roi_idx{i};
+        curID(nodeMap(curID) ==0) = [];
+        if(~isempty(curID))
+            [curIDx, curIDy, curIDz] = ind2sub([lenx, leny, lenz], curID);
+            dist_matrix = squareform(pdist([curIDx(:), curIDy(:),curIDz(:)]));
+            [max_dist, idx] = max(dist_matrix(:));
+            [furthest_point1, furthest_point2] = ind2sub(size(dist_matrix), idx);
+            furthest_points = [curID(furthest_point1), curID(furthest_point2)];
+            ssPath = shortestpath(G,nodeMap(furthest_points(1)),nodeMap(furthest_points(2)));
+            pathID = totalID(ssPath);
+            skel_x_parts_roi_idx_dist_center{i} = pathID;
+        end
+    end
+    % thickness_skel_parts = cellfun(@(c) mean(mask_dendrite_dt_2D(c)), skel_x_parts_roi_idx_dist_center)*80;
+
+
+
+    thickness_skel_parts = cellfun(@(c) mean(mask_dendrite_ds_rm_edt(c)), skel_x_parts_roi_idx_dist_center)*5*lenx; 
+    len_skel_parts = comSeg.check_skel_length(skel_x_parts_roi_idx_dist_center, lenx, leny, lenz, 5*resx,5*resy,5*resz); 
+
     % create a score map so that the center of the dendrite shaft is the lowest. Wateshed algorithm grows from the center to the boundary.
     mask_dendrite_ds_rm_edt = - mask_dendrite_ds_rm_edt;
     mask_dendrite_ds_rm_edt = imgaussfilt3(mask_dendrite_ds_rm_edt, 1);

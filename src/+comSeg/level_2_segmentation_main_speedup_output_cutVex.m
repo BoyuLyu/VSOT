@@ -22,13 +22,8 @@ function level_2_segmentation_main_speedup_output_cutVex(spine_save_folder, spin
             len_region = cellfun(@length, test_region_roi_idx);
             test_region = test_region_roi == (find(len_region == max(len_region),1));
             test_region0 = test_region;
-            % test_region0 = test_region_roi == (find(len_region == max(len_region),1));
-            % head_volume = zeros(size(test_region));
-            % neckx = zeros(size(test_region));
             [lenxtmp, lenytmp, lenztmp] = size(test_region);
-            % curID1 = find(test_region(:) == 1);
-            % [curID1x, curID1y, curID1z] = ind2sub([lenxtmp, lenytmp, lenztmp], curID1);
-            % test_regionID = find(test_region(:) == 1);  
+
             %% generate the surface using the original scale
             se = strel('sphere', smooth_kernel);
             test_region = imdilate(test_region, se);
@@ -69,6 +64,11 @@ function level_2_segmentation_main_speedup_output_cutVex(spine_save_folder, spin
     
             se = strel('sphere', 1);
             contactSite = test_region.* imdilate(shaft_mask, se);
+            contactSite_roi = bwlabeln(contactSite);
+            contactSite_roi_idx = label2idx(contactSite_roi);
+            cc_site_length = cellfun(@length, contactSite_roi_idx);
+            contactSite = contactSite.*0;
+            contactSite(contactSite_roi_idx{cc_site_length == max(cc_site_length)}) = 1;
             contactID = find(contactSite(:) == 1);    
             [contactIDx, contactIDy, contactIDz] = ind2sub([lenxtmp, lenytmp, lenztmp], contactID);
             nearest_vertex = round(Vnieuw);
@@ -134,47 +134,63 @@ function level_2_segmentation_main_speedup_output_cutVex(spine_save_folder, spin
                     sphereMap(j) = abs(r1 - r2)/r2;
                 end
             end
-            sphereMap(sphereMap(:) == 0) = nan;
+            % sphereMap(sphereMap(:) == 0) = nan;
     %%=========================================================================================================
     % Calculate the centerline width score for the cylinder map in the 
+            % for a more rigorous generation of the centerline, use the
+            % center of the ccNeck 
+            center_neck = mean(Vnieuwx(ccNeck,:), 1);
+            dist_2_center_neck = vecnorm((Vnieuwx - center_neck),2,2);
+            neckpoint = find(dist_2_center_neck == min(dist_2_center_neck));
             [pathidxyz, width_eachp] = comSeg.calWidthfromVol(test_region, Vnieuw(neckpoint,:), Vnieuw(headpoint,:), resx, resy, resz); % width is from the tip of the shaft to the tip of the head
-            % 
-            % centerline_dist_2_start = cumsum(sqrt(sum((pathidxyz(2:end,:) - pathidxyz(1:end-1,:)).^2, 2)));
-            % centerline_dist_2_start = [0;centerline_dist_2_start(:)];
-            % ratio_neck_head = zeros(length(width),1) + nan;
-            % for i = 2:length(ratio_neck_head)-1
-            %     ratio_neck_head(i) = width(i+1) - width(i);
-            % end
             width_max_point = find(width_eachp == max(width_eachp), 1,'last');
-
             cylinderMap = zeros(length(idSelected),1) + nan;%indicates whether it is at the head part that 
-            for j = 1:length(cylinderMap)
-                cur_idxyz = Vnieuwx(idSelected(j),:);
-                nearest_centerlinep = find(sum((pathidxyz - cur_idxyz).^2,2) == min(sum((pathidxyz - cur_idxyz).^2,2)));
-                if(nearest_centerlinep <= width_max_point)
-                    cylinderMap(j) = 0;
-
-                end
-            end
-            % geo_score = normalize(sphereMap, 'range') + normalize(cylinderMap, 'range');
-            % idSelected = idSelected(~isnan(cylinderMap));
+            % for j = 1:length(cylinderMap)
+            %     cur_idxyz = Vnieuwx(idSelected(j),:);
+            %     nearest_centerlinep = find(sum((pathidxyz - cur_idxyz).^2,2) == min(sum((pathidxyz - cur_idxyz).^2,2)));
+            %     if(nearest_centerlinep <= width_max_point)
+            %         cylinderMap(j) = 0;
+            %     end
+            % end
+            cylinderMapID = comSeg.find_valid_region(pathidxyz,idSelected,cutVexcellUnique2,Vnieuwx,resx, resy, resz);
+            cylinderMap(cylinderMapID <= width_max_point) = 0;
             curvaturemap = newCurvature(idSelected);
             curvaturemap(isnan(cylinderMap)) = nan;
             sphereMap(isnan(cylinderMap)) = nan;
     %%=========================================================================================================
             % combine the curvature score and the geometry score
+            % [~,p] = sort(curvaturemap);
+            % curvatureOrder = curvaturemap;
+            % curvatureOrder(p) = 1:length(p);
+            % [~,p] = sort(sphereMap); %nans are at the last several positions
+            % geometryOrder = sphereMap;
+            % geometryOrder(p) = 1:length(p); 
+            % geometryOrder(isnan(sphereMap)) = nan;
+            % ccScore = curvatureOrder + geometryOrder + abs(curvatureOrder - geometryOrder);
+            % 
+            % ccScore(ismember(idSelected, ccHead)) = nan;
+            % ccScore(ismember(idSelected, ccNeck)) = nan;
+            % id_point = idSelected(find(ccScore == min(ccScore),1));
+
+
+
             [~,p] = sort(curvaturemap);
-            curvatureOrder = curvaturemap;
-            curvatureOrder(p) = 1:length(p);
+            curvatureOrder = normalize(curvaturemap, 'zscore');
+            % curvatureOrder(p) = 1:length(p);
             [~,p] = sort(sphereMap); %nans are at the last several positions
-            geometryOrder = sphereMap;
-            geometryOrder(p) = 1:length(p); 
+            geometryOrder = normalize(sphereMap, 'zscore');
+            % geometryOrder(p) = 1:length(p); 
             geometryOrder(isnan(sphereMap)) = nan;
+            % ccScore = curvatureOrder + geometryOrder + abs(curvatureOrder - geometryOrder);
             ccScore = curvatureOrder + geometryOrder + abs(curvatureOrder - geometryOrder);
-            % ccScore = curvatureOrder + 2*geometryOrder;
             ccScore(ismember(idSelected, ccHead)) = nan;
             ccScore(ismember(idSelected, ccNeck)) = nan;
             id_point = idSelected(find(ccScore == min(ccScore),1));
+            % out_map = nan(size(Vnieuw2, 1),1);
+            % out_map(idSelected) = ccScore;
+            % ccScore_cycle = cellfun(@(c) mean(out_map(c), 'omitnan'), cutVexcellUnique2(idSelected));
+            % id_point = idSelected(find(ccScore_cycle == min(ccScore_cycle),1));
+
     % %%=========================================================================================================
     %         % based on the combined score search for the best cycle on the surface for the sepraration
     %         % find all the cycles, which one has the minimum mean
@@ -206,7 +222,7 @@ function level_2_segmentation_main_speedup_output_cutVex(spine_save_folder, spin
                     neckx = head_volume;
                     head_volume = tmp;
                 end
-                spineHead=double(head_volume)*3 + double(neckx)*2 + double(shaft_mask);
+                spineHead= double(head_volume)*3 + double(neckx)*2 + double(shaft_mask);
             else
                 spineHead = double(head_volume)*3 + double(shaft_mask);
             end
@@ -238,6 +254,7 @@ function level_2_segmentation_main_speedup_output_cutVex(spine_save_folder, spin
             %     id_small_grid_point = find(dist_gd == min(dist_gd),1);
             %     coor_cut_tmp(j,:)  = [2*bd_head_neckx(id_small_grid_point), 2*bd_head_necky(id_small_grid_point), 5*bd_head_neckz(id_small_grid_point)];
             % end
+            % the part below is for testing the performance of the algorithm
             [coor_headx,coor_heady,coor_headz]  = ind2sub([lenxtmp , lenytmp, lenztmp], id_head);
             coor_head = [coor_headx(:)*2, coor_heady(:)*2, coor_headz(:)*5];
             [coor_neckx, coor_necky, coor_neckz] = ind2sub([lenxtmp , lenytmp, lenztmp], id_neck);   
