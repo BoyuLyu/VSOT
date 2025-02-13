@@ -1,6 +1,6 @@
 
 current_branch = 'D5_Branch_1';
-data_path = '/work/boyu/EM_astrocyte/materials_for_paper_VSOT/VSOT_data_paired_with_codes/data';
+data_path = 'D:\Guoqiang_lab\VSOT_samples\VSOT_data_paired_with_codes\data';
 rootFolder = [data_path, '/performance_testing_level_1_segmentation/dataset/',current_branch];
 [Pts,Tri] = read_off(fullfile(rootFolder, ['dendrite.off']));
 bin_img = tiffreadVolume(fullfile(rootFolder, [current_branch, '_dendrite_volume.tif.tif'])) > 0;
@@ -90,7 +90,7 @@ xticks(1:length(p1)); xticklabels(p1)
 p2 = [10:20:100]; %spine_sk_length_threshold_bare_min
 p1 = [50:50:450];%filter_by_volume_threshold_bare_min
 % neurd_root_folder = '/work/boyu/EM_astrocyte/materials_for_paper_VSOT/test_segmentation_samples/dendrite_spine_segmentation/neurd_results/Spine_Detection_On_Mesh_Branch/notebooks/notebooks'
-neurd_result_path = '/work/boyu/EM_astrocyte/materials_for_paper_VSOT/VSOT_data_paired_with_codes/data/performance_testing_level_1_segmentation/results/neurd_results/output_filtering_tune_parameter2'
+neurd_result_path = 'D:\Guoqiang_lab\VSOT_samples\VSOT_data_paired_with_codes\data/performance_testing_level_1_segmentation/results/neurd_results/output_filtering_tune_parameter2'
 f1_score_map = zeros(length(p1), length(p2));
 for i = 1:length(p1)
     for j = 1:length(p2)
@@ -138,5 +138,5 @@ end
 legend('spine length 10', 'spine length 30', 'spine length 50','spine length 70','spine length 90')
 % record all the folder IDs as well as the corresponding f1 score
 %
-xticks(1:length(p1)); xticklabels(p1)
+xticks(1:length(p1)); xticklabels(p1); ylabel('F1 score')
 xlabel('spine area threshold')
