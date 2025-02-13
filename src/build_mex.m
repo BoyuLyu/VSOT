@@ -7,7 +7,7 @@ spine = tiffreadVolume(spine_path);
 
 [lenx, leny, lenz] = size(spine);
 
-cd(fullfile(resource_folder,'/edt_mex/edt_mex/edt_mex'))
+cd(fullfile(resource_folder,'/edt_mex/edt_mex'))
 mex edt_mex.cpp
 resx = 2;
 resy = 2;

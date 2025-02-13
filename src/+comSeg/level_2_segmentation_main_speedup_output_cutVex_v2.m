@@ -11,7 +11,7 @@ function level_2_segmentation_main_speedup_output_cutVex_v2(spine_save_folder, s
     tic;
     coor_head_cell = cell(length(files_x), 1);
     coor_neck_cell = cell(length(files_x), 1);
-    parfor k = 1:length(files_x)
+    for k = 1:100
         disp(k)
         try
             spineROI = tiffreadVolume(fullfile(spine_save_folder,files_x(k).name));
