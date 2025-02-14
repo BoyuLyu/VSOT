@@ -1,12 +1,12 @@
 function segmentation_our_own_method_from_volume(offFolder,tifResultFolder, our_method_cut_result_folder,tifFolder)
-    addpath('../resources/curvatures/')
-    addpath('../resources/ImprovedSurfaceSmooth/')
-    addpath('../resources/CurvatureEstimation')
-    addpath('/home/boyu/Documents/edt_mex/edt_mex/edt_mex')
-    addpath('../resources/TAUBIN/TAUBIN/')
-    addpath('/home/boyu/Documents/iso2mesh/')
-    addpath('../resources/data_to_off/')
-    addpath('/home/boyu/Documents/src_mex/mex_EM_analysis/mex_EM_analysis')
+%     addpath('../resources/curvatures/')
+%     addpath('../resources/ImprovedSurfaceSmooth/')
+%     addpath('../resources/CurvatureEstimation')
+%     addpath('/home/boyu/Documents/edt_mex/edt_mex/edt_mex')
+%     addpath('../resources/TAUBIN/TAUBIN/')
+%     addpath('/home/boyu/Documents/iso2mesh/')
+%     addpath('../resources/data_to_off/')
+%     addpath('/home/boyu/Documents/src_mex/mex_EM_analysis/mex_EM_analysis')
     
     % offFolder = '/work/boyu/EM_astrocyte/materials_for_paper_VSOT/VSOT_data_paired_with_codes/data/performance_testing_level_2_segmentation/large_dataset_3_annotator_L2345_w_stubby/gt_final_800/off_file';
     % annotationFolder = '/work/boyu/EM_astrocyte/test_segmentation_samples/gt_300/annotation_json_300';
@@ -14,7 +14,7 @@ function segmentation_our_own_method_from_volume(offFolder,tifResultFolder, our_
     listx = dir([offFolder, '/*.off']);
     % our_method_coordinate_folder = '/work/boyu/EM_astrocyte/materials_for_paper_VSOT/VSOT_data_paired_with_codes/data/performance_testing_level_2_segmentation/large_dataset_3_annotator_L2345_w_stubby/dendrite_segmentation_peer_methods_large_dataset/our_result/head_neck_coor_result';
     % our_method_cut_result_folder = '/work/boyu/EM_astrocyte/materials_for_paper_VSOT/VSOT_data_paired_with_codes/data/performance_testing_level_2_segmentation/large_dataset_3_annotator_L2345_w_stubby/dendrite_segmentation_peer_methods_large_dataset/our_result/cut_result';
-    for j = 1:length(listx)
+    for j = 102
         
         namex = listx(j).name;
         namex = namex(1:end-4);

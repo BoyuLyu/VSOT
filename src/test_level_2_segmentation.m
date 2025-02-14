@@ -124,7 +124,7 @@ if(~exist(our_method_cut_result_folder, 'dir'))
 end
 disp(800);
 tic;
-comSeg.level_2_segmentation_main_speedup_output_cutVex_v2(spine_save_folder, spine_head_neck_save_folder, coordinate_output_folder, curvature_scale, resx_s, resy_s, resz_s,1200,1);
+comSeg.level_2_segmentation_main_speedup_output_cutVex_v2(spine_save_folder, spine_head_neck_save_folder, coordinate_output_folder, curvature_scale, resx_s, resy_s, resz_s,800,1);
 toc;
 segmentation_our_own_method_from_volume(offFolder, spine_head_neck_save_folder, our_method_cut_result_folder, spine_save_folder);
 
@@ -149,7 +149,7 @@ if(~exist(our_method_cut_result_folder, 'dir'))
 end
 disp(400);
 tic;
-comSeg.level_2_segmentation_main_speedup_output_cutVex_v2(spine_save_folder, spine_head_neck_save_folder, coordinate_output_folder, curvature_scale, resx_s, resy_s, resz_s,1200,1);
+comSeg.level_2_segmentation_main_speedup_output_cutVex_v2(spine_save_folder, spine_head_neck_save_folder, coordinate_output_folder, curvature_scale, resx_s, resy_s, resz_s,400,1);
 toc;
 segmentation_our_own_method_from_volume(offFolder, spine_head_neck_save_folder, our_method_cut_result_folder, spine_save_folder);
 
@@ -174,7 +174,7 @@ if(~exist(our_method_cut_result_folder, 'dir'))
 end
 disp(200);
 tic;
-comSeg.level_2_segmentation_main_speedup_output_cutVex_v2(spine_save_folder, spine_head_neck_save_folder, coordinate_output_folder, curvature_scale, resx_s, resy_s, resz_s,1200,1);
+comSeg.level_2_segmentation_main_speedup_output_cutVex_v2(spine_save_folder, spine_head_neck_save_folder, coordinate_output_folder, curvature_scale, resx_s, resy_s, resz_s,200,1);
 toc;
 segmentation_our_own_method_from_volume(offFolder, spine_head_neck_save_folder, our_method_cut_result_folder, spine_save_folder);
 
@@ -197,7 +197,7 @@ if(~exist(our_method_cut_result_folder, 'dir'))
 end
 disp(100);
 tic;
-comSeg.level_2_segmentation_main_speedup_output_cutVex_v2(spine_save_folder, spine_head_neck_save_folder, coordinate_output_folder, curvature_scale, resx_s, resy_s, resz_s,1200,1);
+comSeg.level_2_segmentation_main_speedup_output_cutVex_v2(spine_save_folder, spine_head_neck_save_folder, coordinate_output_folder, curvature_scale, resx_s, resy_s, resz_s,100,1);
 toc;
 segmentation_our_own_method_from_volume(offFolder, spine_head_neck_save_folder, our_method_cut_result_folder, spine_save_folder);
 
@@ -277,10 +277,11 @@ data_path = 'D:\Guoqiang_lab\VSOT_samples\VSOT_data_paired_with_codes\data/perfo
     
 result_path = 'D:\Guoqiang_lab\VSOT_samples\VSOT_data_paired_with_codes\data/performance_testing_level_2_segmentation/large_dataset_3_annotator_L2345_w_stubby/segmentation_results';
 
-offFolder = fullfile(data_path, 'stubby/');
+offFolder = fullfile(data_path, 'all/');
 annotationFolder_gt_curves = fullfile(data_path, 'cut_index');
 tamada_result_folder = fullfile(result_path, 'tamada_result_total/');
-our_method_cut_result_folder = fullfile(result_path, 'vsot_result_total');
+% our_method_cut_result_folder = fullfile(result_path, 'vsot_result_total');
+our_method_cut_result_folder = fullfile(result_path, 'our_result_all_tmp_test/cut_result100/');
 ofer_output_folder = fullfile(result_path, 'ofer_total/');
 dorkenwalk_result_folder = fullfile(result_path,'dorkenwald_total/' );
 out1 = main_segmentation_error_testing_v3(offFolder,annotationFolder_gt_curves,tamada_result_folder,our_method_cut_result_folder,ofer_output_folder,dorkenwalk_result_folder,[]);

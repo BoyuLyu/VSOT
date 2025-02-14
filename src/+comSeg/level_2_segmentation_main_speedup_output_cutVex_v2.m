@@ -11,9 +11,8 @@ function level_2_segmentation_main_speedup_output_cutVex_v2(spine_save_folder, s
     tic;
     coor_head_cell = cell(length(files_x), 1);
     coor_neck_cell = cell(length(files_x), 1);
-    for k = 1:100
-        disp(k)
-        try
+    for k = 103
+         try
             spineROI = tiffreadVolume(fullfile(spine_save_folder,files_x(k).name));
             shaft_mask = spineROI == 1;
             test_region = spineROI == 2;

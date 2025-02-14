@@ -11,9 +11,8 @@ function level_2_segmentation_main_speedup_output_cutVex_v2(spine_save_folder, s
     tic;
     coor_head_cell = cell(length(files_x), 1);
     coor_neck_cell = cell(length(files_x), 1);
-    parfor k = 1:length(files_x)
-        disp(k)
-        try
+    for k = 1:100
+         try
             spineROI = tiffreadVolume(fullfile(spine_save_folder,files_x(k).name));
             shaft_mask = spineROI == 1;
             test_region = spineROI == 2;
@@ -172,7 +171,7 @@ function level_2_segmentation_main_speedup_output_cutVex_v2(spine_save_folder, s
             geometryOrder = sphereMap;
             geometryOrder(p) = 1:length(p); 
             geometryOrder(isnan(sphereMap)) = nan;
-            ccScore = curvatureOrder + geometryOrder ;
+            ccScore = curvatureOrder + geometryOrder;
 
             ccScore(ismember(idSelected, ccHead)) = nan;
             ccScore(ismember(idSelected, ccNeck)) = nan;
