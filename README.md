@@ -23,7 +23,7 @@ Morphological analysis of dendrites is critical to understanding the function an
 - MATLAB 2023b
 
 ### data
-- Test data can be downloaded from [here](https://virginiatech-my.sharepoint.com/:u:/g/personal/boyu93_vt_edu/EWu28K-ZjStNognr4h5H26wBErK5nY1EtrKRrnStCjhWfA?e=Nr27RH](https://zenodo.org/records/14884615?token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjYyNjM3ZmVmLTIxNjItNDI0Ny04ZmE0LTVjZjk3ODI4NzYxMiIsImRhdGEiOnt9LCJyYW5kb20iOiJiZjA3YjY3YWE2Njk1MDk3NTcxNWU3YzY1MjdmODMxYyJ9.4XFeYTfOS2D0l5bGCHRLMNl9_okL-0mJkAJDyfYSyrY18Bh69AxSHio7ZQCD2HR0Xgw-BagoaGiit8FjYiKn-A))
+- Test data can be downloaded from [here](https://zenodo.org/records/14884615?token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjYyNjM3ZmVmLTIxNjItNDI0Ny04ZmE0LTVjZjk3ODI4NzYxMiIsImRhdGEiOnt9LCJyYW5kb20iOiJiZjA3YjY3YWE2Njk1MDk3NTcxNWU3YzY1MjdmODMxYyJ9.4XFeYTfOS2D0l5bGCHRLMNl9_okL-0mJkAJDyfYSyrY18Bh69AxSHio7ZQCD2HR0Xgw-BagoaGiit8FjYiKn-A)
 - Multi-layer cortex data constructed from MICrONS can be requested from the author Boyu Lyu [boyu93@vt.edu](mailto:boyu93@vt.edu)
 ### dependencies
 - gcc/g++
