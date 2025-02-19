@@ -97,18 +97,6 @@ function test_level_1_segmentation(data_path, save_path)
     dist_dendrite = [];
     mask_dendrite = [];
     mask_skel = [];
-    % gen_final_results_all_methods(data_path);
-    % save_performance_testing_results(data_path, save_path);
-
+    gen_final_results_all_methods(data_path);
+    save_performance_testing_results(data_path, save_path);
 end
-
-
-% for i = 1:length(list_of_folders)
-%     cur_folder = convertStringsToChars(list_of_folders(i));
-%     if(~exist(fullfile(outputfolder, cur_folder), 'dir'))
-%         mkdir(fullfile(outputfolder, cur_folder));
-%     end
-%     mask_spine = tiffreadVolume(fullfile(outputfolder, cur_folder, 'spine_segmentation.tif')) > 0;
-%     mask_shaft = tiffreadVolume(fullfile(outputfolder, cur_folder, 'shaft_segmentation.tif')) > 0;
-%     outx = mask_spine*2 + mask_shaft;
-% end

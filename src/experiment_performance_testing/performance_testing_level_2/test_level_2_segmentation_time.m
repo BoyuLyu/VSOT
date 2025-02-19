@@ -1,4 +1,4 @@
-function test_level_2_segmentation(data_path, result_path)
+function test_level_2_segmentation_time(data_path, result_path)
 offFolder = fullfile(data_path,'off_file');
 tifFolder = fullfile(data_path, 'tif_file');
 annotationFolder = fullfile(data_path,'/performance_testing_level_2_segmentation/gt_300/annotation_json_300');
@@ -81,24 +81,128 @@ segmentation_our_own_method(offFolder, coordinate_output_folder, our_method_cut_
 
 
 
-data_path = 'D:\Guoqiang_lab\VSOT_samples\VSOT_data_paired_with_codes\data\performance_testing_level_2_segmentation\large_dataset_3_annotator_L2345_w_stubby\gt_final_800\subtypes';
+data_path = 'D:\Guoqiang_lab\VSOT_samples\VSOT_data_paired_with_codes\data\performance_testing_level_2_segmentation\large_dataset_3_annotator_L2345_w_stubby\gt_final_800\uniformly_selected_samples';
 result_path = 'D:\Guoqiang_lab\VSOT_samples\VSOT_data_paired_with_codes\data\performance_testing_level_2_segmentation\large_dataset_3_annotator_L2345_w_stubby\segmentation_results';
-spine_save_folder = fullfile(data_path, "all_tif\");
+spine_save_folder = fullfile(data_path, "tif_file\");
 offFolder = fullfile(data_path, 'all/');
-spine_head_neck_save_folder = fullfile(result_path, "our_result_all_tmp_test\volume_segmentation2/");
+spine_head_neck_save_folder = fullfile(result_path, "our_result_all_tmp_test\volume_segmentation1200/");
 if(~exist(spine_head_neck_save_folder, 'dir'))
     mkdir(spine_head_neck_save_folder)
 end
-coordinate_output_folder = fullfile(result_path, "our_result_all_tmp_test\head_neck_coor_result2/");
+coordinate_output_folder = fullfile(result_path, "our_result_all_tmp_test\head_neck_coor_result1200/");
 if(~exist(coordinate_output_folder, 'dir'))
     mkdir(coordinate_output_folder)
 end
-our_method_cut_result_folder = fullfile(result_path, "our_result_all_tmp_test\cut_result2/");
+our_method_cut_result_folder = fullfile(result_path, "our_result_all_tmp_test\cut_result1200/");
 if(~exist(our_method_cut_result_folder, 'dir'))
     mkdir(our_method_cut_result_folder);
 end
+disp(1200);
+tic;
 comSeg.level_2_segmentation_main_speedup_output_cutVex_v2(spine_save_folder, spine_head_neck_save_folder, coordinate_output_folder, curvature_scale, resx_s, resy_s, resz_s,1200,1);
+toc;
 segmentation_our_own_method_from_volume(offFolder, spine_head_neck_save_folder, our_method_cut_result_folder, spine_save_folder);
+
+
+
+
+data_path = 'D:\Guoqiang_lab\VSOT_samples\VSOT_data_paired_with_codes\data\performance_testing_level_2_segmentation\large_dataset_3_annotator_L2345_w_stubby\gt_final_800\uniformly_selected_samples';
+result_path = 'D:\Guoqiang_lab\VSOT_samples\VSOT_data_paired_with_codes\data\performance_testing_level_2_segmentation\large_dataset_3_annotator_L2345_w_stubby\segmentation_results';
+spine_save_folder = fullfile(data_path, "tif_file\");
+offFolder = fullfile(data_path, 'all/');
+spine_head_neck_save_folder = fullfile(result_path, "our_result_all_tmp_test\volume_segmentation800/");
+if(~exist(spine_head_neck_save_folder, 'dir'))
+    mkdir(spine_head_neck_save_folder)
+end
+coordinate_output_folder = fullfile(result_path, "our_result_all_tmp_test\head_neck_coor_result800/");
+if(~exist(coordinate_output_folder, 'dir'))
+    mkdir(coordinate_output_folder)
+end
+our_method_cut_result_folder = fullfile(result_path, "our_result_all_tmp_test\cut_result800/");
+if(~exist(our_method_cut_result_folder, 'dir'))
+    mkdir(our_method_cut_result_folder);
+end
+disp(800);
+tic;
+comSeg.level_2_segmentation_main_speedup_output_cutVex_v2(spine_save_folder, spine_head_neck_save_folder, coordinate_output_folder, curvature_scale, resx_s, resy_s, resz_s,800,1);
+toc;
+vsot_save_face_label(offFolder, spine_head_neck_save_folder, our_method_cut_result_folder, spine_save_folder);
+
+
+
+
+data_path = 'D:\Guoqiang_lab\VSOT_samples\VSOT_data_paired_with_codes\data\performance_testing_level_2_segmentation\large_dataset_3_annotator_L2345_w_stubby\gt_final_800\uniformly_selected_samples';
+result_path = 'D:\Guoqiang_lab\VSOT_samples\VSOT_data_paired_with_codes\data\performance_testing_level_2_segmentation\large_dataset_3_annotator_L2345_w_stubby\segmentation_results';
+spine_save_folder = fullfile(data_path, "tif_file\");
+offFolder = fullfile(data_path, 'all/');
+spine_head_neck_save_folder = fullfile(result_path, "our_result_all_tmp_test\volume_segmentation400/");
+if(~exist(spine_head_neck_save_folder, 'dir'))
+    mkdir(spine_head_neck_save_folder)
+end
+coordinate_output_folder = fullfile(result_path, "our_result_all_tmp_test\head_neck_coor_result400/");
+if(~exist(coordinate_output_folder, 'dir'))
+    mkdir(coordinate_output_folder)
+end
+our_method_cut_result_folder = fullfile(result_path, "our_result_all_tmp_test\cut_result400/");
+if(~exist(our_method_cut_result_folder, 'dir'))
+    mkdir(our_method_cut_result_folder);
+end
+disp(400);
+tic;
+comSeg.level_2_segmentation_main_speedup_output_cutVex_v2(spine_save_folder, spine_head_neck_save_folder, coordinate_output_folder, curvature_scale, resx_s, resy_s, resz_s,400,1);
+toc;
+segmentation_our_own_method_from_volume(offFolder, spine_head_neck_save_folder, our_method_cut_result_folder, spine_save_folder);
+
+
+
+
+data_path = 'D:\Guoqiang_lab\VSOT_samples\VSOT_data_paired_with_codes\data\performance_testing_level_2_segmentation\large_dataset_3_annotator_L2345_w_stubby\gt_final_800\uniformly_selected_samples';
+result_path = 'D:\Guoqiang_lab\VSOT_samples\VSOT_data_paired_with_codes\data\performance_testing_level_2_segmentation\large_dataset_3_annotator_L2345_w_stubby\segmentation_results';
+spine_save_folder = fullfile(data_path, "tif_file\");
+offFolder = fullfile(data_path, 'all/');
+spine_head_neck_save_folder = fullfile(result_path, "our_result_all_tmp_test\volume_segmentation200/");
+if(~exist(spine_head_neck_save_folder, 'dir'))
+    mkdir(spine_head_neck_save_folder)
+end
+coordinate_output_folder = fullfile(result_path, "our_result_all_tmp_test\head_neck_coor_result200/");
+if(~exist(coordinate_output_folder, 'dir'))
+    mkdir(coordinate_output_folder)
+end
+our_method_cut_result_folder = fullfile(result_path, "our_result_all_tmp_test\cut_result200/");
+if(~exist(our_method_cut_result_folder, 'dir'))
+    mkdir(our_method_cut_result_folder);
+end
+disp(200);
+tic;
+comSeg.level_2_segmentation_main_speedup_output_cutVex_v2(spine_save_folder, spine_head_neck_save_folder, coordinate_output_folder, curvature_scale, resx_s, resy_s, resz_s,200,1);
+toc;
+segmentation_our_own_method_from_volume(offFolder, spine_head_neck_save_folder, our_method_cut_result_folder, spine_save_folder);
+
+
+data_path = 'D:\Guoqiang_lab\VSOT_samples\VSOT_data_paired_with_codes\data\performance_testing_level_2_segmentation\large_dataset_3_annotator_L2345_w_stubby\gt_final_800\uniformly_selected_samples';
+result_path = 'D:\Guoqiang_lab\VSOT_samples\VSOT_data_paired_with_codes\data\performance_testing_level_2_segmentation\large_dataset_3_annotator_L2345_w_stubby\segmentation_results';
+spine_save_folder = fullfile(data_path, "tif_file\");
+offFolder = fullfile(data_path, 'all/');
+spine_head_neck_save_folder = fullfile(result_path, "our_result_all_tmp_test\volume_segmentation100/");
+if(~exist(spine_head_neck_save_folder, 'dir'))
+    mkdir(spine_head_neck_save_folder)
+end
+coordinate_output_folder = fullfile(result_path, "our_result_all_tmp_test\head_neck_coor_result100/");
+if(~exist(coordinate_output_folder, 'dir'))
+    mkdir(coordinate_output_folder)
+end
+our_method_cut_result_folder = fullfile(result_path, "our_result_all_tmp_test\cut_result100/");
+if(~exist(our_method_cut_result_folder, 'dir'))
+    mkdir(our_method_cut_result_folder);
+end
+disp(100);
+tic;
+comSeg.level_2_segmentation_main_speedup_output_cutVex_v2(spine_save_folder, spine_head_neck_save_folder, coordinate_output_folder, curvature_scale, resx_s, resy_s, resz_s,100,1);
+toc;
+segmentation_our_own_method_from_volume(offFolder, spine_head_neck_save_folder, our_method_cut_result_folder, spine_save_folder);
+
+
+
 
 
 profile viewer
@@ -133,7 +237,7 @@ offFolder = fullfile(root_folder, 'off_file');
 % source_coordinate_folder = '/work/boyu/EM_astrocyte/materials_for_paper_VSOT/VSOT_data_paired_with_codes/data/performance_testing_level_2_segmentation/large_dataset_3_annotator_L2345_w_stubby/segmentation_results/our_result/head_neck_coor_result';
 % listx_name = {listx.name};
 our_method_coordinate_folder = fullfile(result_folder, 'our_result/head_neck_coor_result');
-our_method_cut_result_folder = fullfile(result_folder, 'our_result/cut_result');
+our_method_cut_result_folder = fullfile(result_folder, 'vsot_result_total');
 % if(~exist(our_method_coordinate_folder, 'dir'))
 %     mkdir(our_method_coordinate_folder);
 % end
@@ -169,14 +273,15 @@ segmentation_peer_method_tamada(offFolder, tif_folder,tamada_result_folder)
 
 
 
-data_path = 'D:\Guoqiang_lab\VSOT_samples\VSOT_data_paired_with_codes\data/performance_testing_level_2_segmentation/large_dataset_3_annotator_L2345_w_stubby/gt_final_800/subtypes';
+data_path = '/work/boyu/EM_astrocyte/materials_for_paper_VSOT/VSOT_data_paired_with_codes/data/performance_testing_level_2_segmentation/large_dataset_3_annotator_L2345_w_stubby/gt_final_800/subtypes';
     
-result_path = 'D:\Guoqiang_lab\VSOT_samples\VSOT_data_paired_with_codes\data/performance_testing_level_2_segmentation/large_dataset_3_annotator_L2345_w_stubby/segmentation_results';
+result_path = '/work/boyu/EM_astrocyte/materials_for_paper_VSOT/VSOT_data_paired_with_codes/data/performance_testing_level_2_segmentation/large_dataset_3_annotator_L2345_w_stubby/segmentation_results';
 
-offFolder = fullfile(data_path, 'stubby/');
+offFolder = fullfile(data_path, 'all/');
 annotationFolder_gt_curves = fullfile(data_path, 'cut_index');
 tamada_result_folder = fullfile(result_path, 'tamada_result_total/');
-our_method_cut_result_folder = fullfile(result_path, 'vsot_result_total');
+% our_method_cut_result_folder = fullfile(result_path, 'vsot_result_total');
+our_method_cut_result_folder = fullfile(result_path, 'our_result_all/cut_result/');
 ofer_output_folder = fullfile(result_path, 'ofer_total/');
 dorkenwalk_result_folder = fullfile(result_path,'dorkenwald_total/' );
 out1 = main_segmentation_error_testing_v3(offFolder,annotationFolder_gt_curves,tamada_result_folder,our_method_cut_result_folder,ofer_output_folder,dorkenwalk_result_folder,[]);
