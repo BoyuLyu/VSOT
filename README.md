@@ -1,5 +1,5 @@
 # VSOT
-**Volume-Surface Optimization for Accurate Nanostructure Analysis of Dendrites**
+**VSOT: Volume-Surface Optimization for Accu-rate Ultrastructure Analysis of Dendritic Spines**
 
 ### Table of contents
 - [Introduction](#Introduction)
@@ -22,15 +22,15 @@ Morphological analysis of dendrites is critical to understanding the function an
 - The code has been tested on Ubuntu 20.04 & 22.04
 - MATLAB 2023b
 
-### data
+### Data
 - Test data can be downloaded from [here](https://zenodo.org/records/14884615?token=eyJhbGciOiJIUzUxMiJ9.eyJpZCI6IjYyNjM3ZmVmLTIxNjItNDI0Ny04ZmE0LTVjZjk3ODI4NzYxMiIsImRhdGEiOnt9LCJyYW5kb20iOiJiZjA3YjY3YWE2Njk1MDk3NTcxNWU3YzY1MjdmODMxYyJ9.4XFeYTfOS2D0l5bGCHRLMNl9_okL-0mJkAJDyfYSyrY18Bh69AxSHio7ZQCD2HR0Xgw-BagoaGiit8FjYiKn-A)
 - Multi-layer cortex data constructed from MICrONS can be requested from the author Boyu Lyu [boyu93@vt.edu](mailto:boyu93@vt.edu)
-### dependencies
+### Dependencies
 - gcc/g++
 - build-essential
 - [tinymesh](https://github.com/tatsy/tinymesh.git) please download and extract to ./resources
 - [iso2mesh](https://github.com/fangq/iso2mesh.git) please download and extract to ./resources
-### run
+### Run
 After finishing downloading all the dependencies, run main.m for
 -  Run the whole pipeline on an example dataset
 -  Reproduce the performance testing for level-1 & level-2 segmentation
