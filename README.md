@@ -32,9 +32,9 @@ Morphological analysis of dendrites is critical to understanding the function an
 - [iso2mesh](https://github.com/fangq/iso2mesh.git) please download and extract to ./resources
 ### run
 After finishing downloading all the dependencies, run main.m for
-- (1) Run the whole pipeline on an example dataset
-- (2) Reproduce the performance testing for level-1 & level-2 segmentation
-- (3) Plot the results of structural quantification.
+-  Run the whole pipeline on an example dataset
+-  Reproduce the performance testing for level-1 & level-2 segmentation
+-  Plot the results of structural quantification.
 
 
 ## License
