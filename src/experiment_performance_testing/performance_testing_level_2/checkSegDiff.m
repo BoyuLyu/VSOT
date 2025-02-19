@@ -15,7 +15,7 @@ function [error, error_dist] = checkSegDiff(tri, pts, part1face_example, part1_f
     [bins, binsizes] = conncomp(face_G);
     [~, sortedID] = sort(binsizes, 'descend');
     if(length(binsizes) == 1)
-        % warning('incomplete separation');
+        warning('incomplete separation');
     else
         part1_can = find(bins == sortedID(1));
         if(any(part1_can == part1face_example))

@@ -16,8 +16,8 @@ function [F1score, precision, recall, adjjaccardx] = level_1_performance_testing
     % measure the error with respect to each dendrite spine
     % first group gt into clusters
     % then group target surface into clusters
-    big_graph_list = [surfaceTri(:,1:2), [1:size(surfaceTri)]'; surfaceTri(:,2:3), [1:size(surfaceTri)]'; ...
-        surfaceTri(:,[3,1]), [1:size(surfaceTri)]'];
+    big_graph_list = [[surfaceTri(:,1:2), [1:size(surfaceTri)]']; [surfaceTri(:,2:3), [1:size(surfaceTri)]']; ...
+        [surfaceTri(:,[3,1]), [1:size(surfaceTri)]']];
     big_graph_list(:,1:2) = sort(big_graph_list(:,1:2),2);
     big_graph_list = sortrows(big_graph_list,[1,2]);
     face_graph_list = [big_graph_list(1:2:end,3), big_graph_list(2:2:end,3)];

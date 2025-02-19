@@ -41,7 +41,7 @@ for i=1:size(FV.vertices)
 end
 %}
 %
-for i=1:size(FV.vertices)
+for i=1:size(FV.vertices,1)
 %This is taken from trimsh2 - Szymon Rusinkiewicz implementation. It also considers
 %direction
 np=cross(up(i,:),vp(i,:));

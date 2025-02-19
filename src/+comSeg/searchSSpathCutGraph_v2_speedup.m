@@ -80,7 +80,7 @@ headpp = mF2(ismember(mF2(:,1),ccHead) | ismember(mF2(:,2),ccHead) | ismember(mF
 headpp = unique(headpp(:));
 neckpp = mF2(ismember(mF2(:,1),ccNeck) | ismember(mF2(:,2),ccNeck) | ismember(mF2(:,3),ccNeck) ,:);
 neckpp = unique(neckpp(:));
-for j = 1:size(id_selected,1)
+for j = 1:length(id_selected)
     i = id_selected(j);
     try
     if(any(headpp == i)|| any(neckpp == i))
@@ -101,7 +101,7 @@ for j = 1:size(id_selected,1)
     end
     
     catch ME
-%     error('problem happens at %s', num2str(i))
+     error('problem happens at %s', num2str(i))
     continue;
     end
 end

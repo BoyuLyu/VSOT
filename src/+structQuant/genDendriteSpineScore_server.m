@@ -1,4 +1,4 @@
-function [singleSynHeadVolume,singleSynHeadMeanRadius,singleSynNeckLength, singleSynNeckSection, singleSynNeckMeanRadius] =...
+function [singleSynHeadVolume,singleSynHeadMeanRadius,singleSynNeckLength, singleSynNeckSection, singleSynNeckMeanRadius, singleSynNeckStd] =...
     genDendriteSpineScore_server(cleftID, spineID, lenx, leny, lenz,spineHNROI, resx, resy, resz)
 
 % addpath('/home/boyu/Documents/edt_mex/edt_mex/edt_mex')
@@ -50,7 +50,9 @@ function [singleSynHeadVolume,singleSynHeadMeanRadius,singleSynNeckLength, singl
             tmpx = hidxyz(hidxyz(:,3) >= i & hidxyz(:,3) < (i+10),:);
             centerxy = [mean(tmpx(:,1)), mean(tmpx(:,2))];
             distAll = sqrt((tmpx(:,1) - centerxy(1)).^2 + (tmpx(:,2) - centerxy(2)).^2);
-            maxRadiusx(i + 1) = mean(distAll); 
+            if(~isempty(distAll))
+                maxRadiusx(i + 1) = quantile(distAll, 0.99);% To avoid the inlcusion of the outliers when deciding the radius
+            end
         end
         singleSynHeadMeanRadius = max(maxRadiusx);
     else
@@ -80,7 +82,9 @@ function [singleSynHeadVolume,singleSynHeadMeanRadius,singleSynNeckLength, singl
             tmpx = hidxyz(hidxyz(:,3) >= i & hidxyz(:,3) < (i+10),:);
             centerxy = [mean(tmpx(:,1)), mean(tmpx(:,2))];
             distAll = sqrt((tmpx(:,1) - centerxy(1)).^2 + (tmpx(:,2) - centerxy(2)).^2);
-            maxRadiusx(i + 1) = mean(distAll); 
+            if(~isempty(distAll))
+                maxRadiusx(i + 1) = quantile(distAll, 0.99);
+            end
         end
         singleSynHeadMeanRadius = max(maxRadiusx);
         
@@ -141,45 +145,26 @@ function [singleSynHeadVolume,singleSynHeadMeanRadius,singleSynNeckLength, singl
                 [pathIDx, pathIDy, pathIDz] = ind2sub([lenx, leny, lenz], pathID);
                 dist_pair = sqrt((pathIDx(2:end) - pathIDx(1:end-1)).^2.*resx^2 + (pathIDy(2:end) - pathIDy(1:end-1)).^2.*resy^2+ (pathIDz(2:end) - pathIDz(1:end-1)).^2.*resz^2);
                 singleSynNeckLength = sum(dist_pair);
+                width_all = dist_dendrite(pathID);
+                singleSynNeckMeanRadius = mean(width_all);
+                singleSynNeckStd = std(width_all);
             else
                 singleSynNeckLength = 0;
+                singleSynNeckStd = nan;
+                singleSynNeckMeanRadius = nan;
             end
         else
-           singleSynNeckLength = 0;
+            singleSynNeckLength = 0;
+            singleSynNeckStd = nan;
+            singleSynNeckMeanRadius = nan;
         end
-%         mask_dendrite_1D = logical(headNeckTotal(:));
-%         dist_dendrite_1D = edt_mex(mask_dendrite_1D, lenx, leny, lenz, 16,16,40);
-%         mask_dendrite_1D = [];
-%         dist_dendrite = reshape(dist_dendrite_1D, lenx, leny, lenz);
-%         curDendriteDist = zeros(lenx, leny, lenz);
-%         curID = spineID;
-%         curDendriteDist(curID) = dist_dendrite(curID);
-%         curDendriteDist2 = max(curDendriteDist(:)) - curDendriteDist;
-%         nodeMap = zeros(lenx, leny, lenz);
-%         nodeMap(curID) = 1:length(curID);
-%         nodeMap(1,:,:) = 0;
-%         nodeMap(size(nodeMap, 1),:,:) = 0;
-%         nodeMap(:,1,:) = 0;
-%         nodeMap(:,size(nodeMap, 2),:) = 0; 
-%         nei26 = regionGrow3D(curID, lenx, leny, lenz, xxshift, yyshift);
-%         score = sqrt(curDendriteDist2(nei26(:,1)).*curDendriteDist2(nei26(:,2)));
-%         nodex = [nodeMap(nei26),score];
-%         nodex(nodex(:,1) == 0 | nodex(:,2) ==0,:) = [];
-%         G = graph(nodex(:,1), nodex(:,2), nodex(:,3));
-%         ssPath = shortestpath(G,nodeMap(id1),nodeMap(id2));
-%         pathID = curID(ssPath);
-%         linex = zeros(lenx, leny, lenz);
-%         linex(pathID) = 1;
-%         linex_output = imdilate(linex, se);
-% %         tifwrite(uint8(linex_output), '../test_centerline' )
-%         [pathIDx, pathIDy, pathIDz] = ind2sub([lenx, leny, lenz], pathID);
-%         dist_pair = sqrt((pathIDx(2:end) - pathIDx(1:end-1)).^2.*16^2 + (pathIDy(2:end) - pathIDy(1:end-1)).^2.*16^2+ (pathIDz(2:end) - pathIDz(1:end-1)).^2.*40^2);
-%         singleSynNeckLength = sum(dist_pair);
 
     else
         singleSynNeckLength = 0;
+        singleSynNeckStd = nan;
+        singleSynNeckMeanRadius = nan;
     end
     singleSynNeckSection = sum(spineHNROI_neck(:))*resx*resy*resz/ singleSynNeckLength;
-    singleSynNeckMeanRadius = sqrt(singleSynNeckSection/ pi);
+
 
 end

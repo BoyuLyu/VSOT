@@ -4,7 +4,7 @@ import matplotlib
 import trimesh
 import numpy as np
 from shapely.geometry import LineString
-import pyglet
+# import pyglet
 import networkx as nx
 import matplotlib.pyplot as plt
 from scipy.signal import argrelmin
@@ -55,8 +55,8 @@ def make_plane(mesh, path, vertices):
 
 
 if __name__ == '__main__':
-    rootFolder = "/work/boyu/EM_astrocyte/test_segmentation_samples/gt_300/surface_off_300"
-    outputFolder = "/work/boyu/EM_astrocyte/dendrite_segmentation_peer_methods/tamada/results"
+    rootFolder = "/work/boyu/EM_astrocyte/materials_for_paper_VSOT/VSOT_data_paired_with_codes/data/performance_testing_level_2_segmentation/large_dataset_3_annotator_L2345_w_stubby/gt_final_800/uniformly_selected_samples/off_file"
+    outputFolder = "/work/boyu/EM_astrocyte/materials_for_paper_VSOT/VSOT_data_paired_with_codes/data/performance_testing_level_2_segmentation/large_dataset_3_annotator_L2345_w_stubby/segmentation_results/tamada_result"
     all_files = os.listdir(rootFolder)
     all_files2 = os.listdir(outputFolder)
     for namex in all_files:

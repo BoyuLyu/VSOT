@@ -15,6 +15,15 @@ function [single_synapse_struct, double_synapse_struct] = ...
     single_synapse_struct = struct();
     double_synapse_struct = struct();
     [lenx, leny, lenz] = size(spine_mask);
+    % certain spine mask contains an extra part of the dendrite, remove it
+    all_roi = bwlabeln(spineHNROI > 0);
+    all_roi_idx = label2idx(all_roi);
+    all_roi_idx = all_roi_idx(:);
+    target_indicators = cellfun(@(x) sum(spineHNROI(x) == 3), all_roi_idx);
+    target_mask = zeros(size(spineHNROI), 'uint8');
+    target_mask(spine_mask_id(target_indicators > 0)) = 1;
+    spineHNROI = spineHNROI.*target_mask;
+
     if(size(value_counts,1) == 0||size(value_counts,1) >=2)
         % for certain spines without any cleft touching save only the
         % quantification related to the dendrite spine

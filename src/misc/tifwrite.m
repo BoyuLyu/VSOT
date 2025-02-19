@@ -1,4 +1,5 @@
 function tifwrite(outLabel, ImName)
+ImName = char(ImName);
 if size(outLabel,4)==1
     imwrite(outLabel(:,:,1),[ImName,'.tif']);
     for i = 2:size(outLabel,3)
